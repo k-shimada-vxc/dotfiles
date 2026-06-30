@@ -1,0 +1,11 @@
+interface:
+  display_name: "Notion PB to Design Doc"
+  short_description: "Turn Notion PB pages into readable design docs"
+  default_prompt: "Use $notion-pb-to-design-doc to turn this Notion PB into a readable design document in our ticket style."
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "notion"
+      description: "Notion MCP server"
+      transport: "streamable_http"
+      url: "https://mcp.notion.com/mcp"

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Subagent Code Review"
+  short_description: "コードレビューやPRレビューで独立サブエージェント所見を先行取得"
+  default_prompt: "Use $subagent-code-review to run an independent subagent review first, verify the findings yourself, and then deliver a severity-ordered code review with file:line references."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Go Test Quality Review"
+  short_description: "Goテスト設計を読解レビュー"
+  default_prompt: "Use $go-test-quality-check to review Go test code quality (fixtures, table-driven design, and contract-focused coverage) and list findings by severity with file:line."
