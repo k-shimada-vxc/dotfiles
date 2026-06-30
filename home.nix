@@ -9,6 +9,23 @@
 let
   nodejsPackage = if builtins.hasAttr "nodejs_22" pkgs then pkgs.nodejs_22 else pkgs.nodejs;
 
+  managedAgentSkills = {
+    "gh-address-comments" = ./agents/skills/gh-address-comments;
+    "go-test-quality-check" = ./agents/skills/go-test-quality-check;
+    "notion-pb-to-design-doc" = ./agents/skills/notion-pb-to-design-doc;
+    "subagent-code-review" = ./agents/skills/subagent-code-review;
+  };
+
+  managedSkillLinks =
+    root:
+    lib.mapAttrs' (
+      name: source:
+      lib.nameValuePair "${root}/${name}" {
+        inherit source;
+        force = true;
+      }
+    ) managedAgentSkills;
+
   claudeCodeVersion = "2.1.196";
   claudeCode = pkgs.stdenvNoCC.mkDerivation {
     pname = "claude-code";
@@ -120,34 +137,29 @@ in
 
   programs.home-manager.enable = true;
 
-  # エージェント横断の指示は dotfiles 側を正本にし、各ツールの標準パスへ配る。
-  home.file.".codex/AGENTS.md" = {
-    source = ./agents/instructions/common.md;
-    force = true;
-  };
-  home.file.".claude/CLAUDE.md".source = ./agents/instructions/common.md;
+  home.file =
+    # 自作 skill は skill ディレクトリ単位で Nix 管理し、各ツールの標準パスへ配る。
+    (managedSkillLinks ".agents/skills")
+    // (managedSkillLinks ".claude/skills")
+    // {
+      # エージェント横断の指示は dotfiles 側を正本にし、各ツールの標準パスへ配る。
+      ".codex/AGENTS.md" = {
+        source = ./agents/instructions/common.md;
+        force = true;
+      };
+      ".claude/CLAUDE.md".source = ./agents/instructions/common.md;
 
-  # 自作 skill は ~/.agents を正本パスにしつつ、Claude Code の標準パスにも同じものを見せる。
-  home.file.".agents/skills" = {
-    source = ./agents/skills;
-    recursive = true;
-    force = true;
-  };
-  home.file.".claude/skills" = {
-    source = ./agents/skills;
-    recursive = true;
-  };
-  home.file.".codex/skills/gh-address-comments" = {
-    source = ./agents/skills/gh-address-comments;
-    recursive = true;
-    force = true;
-  };
+      ".codex/skills/gh-address-comments" = {
+        source = managedAgentSkills."gh-address-comments";
+        force = true;
+      };
 
-  # zsh プラグインは profile 直下ではなく固定のユーザー管理パスへ配置する。
-  home.file.".local/share/zsh/plugins/zsh-autosuggestions".source =
-    "${pkgs.zsh-autosuggestions}/share/zsh-autosuggestions";
-  home.file.".local/share/zsh/plugins/fast-syntax-highlighting".source =
-    "${pkgs.zsh-fast-syntax-highlighting}/share/zsh/plugins/fast-syntax-highlighting";
+      # zsh プラグインは profile 直下ではなく固定のユーザー管理パスへ配置する。
+      ".local/share/zsh/plugins/zsh-autosuggestions".source =
+        "${pkgs.zsh-autosuggestions}/share/zsh-autosuggestions";
+      ".local/share/zsh/plugins/fast-syntax-highlighting".source =
+        "${pkgs.zsh-fast-syntax-highlighting}/share/zsh/plugins/fast-syntax-highlighting";
+    };
 
   # Corepack の shim をユーザー管理ディレクトリへ置き、pnpm / yarn を即利用できるようにする。
   home.activation.enableCorepack = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
