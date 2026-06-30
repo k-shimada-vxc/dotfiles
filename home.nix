@@ -130,11 +130,16 @@ in
   # 自作 skill は ~/.agents を正本パスにしつつ、Claude Code の標準パスにも同じものを見せる。
   home.file.".agents/skills" = {
     source = ./agents/skills;
+    recursive = true;
     force = true;
   };
-  home.file.".claude/skills".source = ./agents/skills;
+  home.file.".claude/skills" = {
+    source = ./agents/skills;
+    recursive = true;
+  };
   home.file.".codex/skills/gh-address-comments" = {
     source = ./agents/skills/gh-address-comments;
+    recursive = true;
     force = true;
   };
 
