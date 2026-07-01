@@ -1,0 +1,4 @@
+interface:
+  display_name: "Git Commit"
+  short_description: "変更を意図ごとのコミットに分割"
+  default_prompt: "Use $git-commit to split the current changes into appropriate Japanese conventional commits."

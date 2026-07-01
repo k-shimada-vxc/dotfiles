@@ -11,6 +11,7 @@ let
 
   managedAgentSkills = {
     "gh-address-comments" = ./agents/skills/gh-address-comments;
+    "git-commit" = ./agents/skills/git-commit;
     "go-test-quality-check" = ./agents/skills/go-test-quality-check;
     "notion-pb-to-design-doc" = ./agents/skills/notion-pb-to-design-doc;
     "subagent-code-review" = ./agents/skills/subagent-code-review;
