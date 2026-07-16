@@ -3,19 +3,30 @@
   pkgs,
   username,
   homeDirectory,
+  inspired-mino-design-skills,
   ...
 }:
 
 let
   nodejsPackage = if builtins.hasAttr "nodejs_22" pkgs then pkgs.nodejs_22 else pkgs.nodejs;
 
+  inspiredMinoSkillsRoot = inspired-mino-design-skills + "/.agents/skills";
+
   managedAgentSkills = {
     "gh-address-comments" = ./agents/skills/gh-address-comments;
     "git-commit" = ./agents/skills/git-commit;
     "go-test-quality-check" = ./agents/skills/go-test-quality-check;
     "notion-pb-to-design-doc" = ./agents/skills/notion-pb-to-design-doc;
-    "subagent-code-review" = ./agents/skills/subagent-code-review;
-  };
+  }
+  // lib.genAttrs [
+    "mino-architecture-quality-strategy"
+    "mino-core"
+    "mino-design-by-contract"
+    "mino-domain-model-completeness"
+    "mino-interface-implementation-separation"
+    "mino-problem-framing"
+    "mino-reproducible-development"
+  ] (name: inspiredMinoSkillsRoot + "/${name}");
 
   managedSkillLinks =
     root:
