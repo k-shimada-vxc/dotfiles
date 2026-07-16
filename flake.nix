@@ -1,5 +1,5 @@
 {
-  description = "k-shimada dotfiles managed with Home Manager";
+  description = "k-shimada macOS environment managed with nix-darwin and Home Manager";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
@@ -7,29 +7,46 @@
       url = "github:nix-community/home-manager/release-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    nix-darwin = {
+      url = "github:nix-darwin/nix-darwin/nix-darwin-25.11";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    inspired-mino-design-skills = {
+      url = "github:my-take-dev/inspired-mino-design-skills";
+      flake = false;
+    };
   };
 
   outputs =
-    { nixpkgs, home-manager, ... }:
+    {
+      nix-darwin,
+      home-manager,
+      inspired-mino-design-skills,
+      ...
+    }:
     let
-      system = "aarch64-darwin";
       username = "k-shimada";
       homeDirectory = "/Users/${username}";
     in
     {
-      homeConfigurations.${username} = home-manager.lib.homeManagerConfiguration {
-        pkgs = import nixpkgs {
-          inherit system;
-          config.allowUnfreePredicate =
-            pkg:
-            builtins.elem (nixpkgs.lib.getName pkg) [
-              "claude-code"
-            ];
-        };
-        modules = [ ./home.nix ];
-        extraSpecialArgs = {
+      darwinConfigurations."VX-NT-0969" = nix-darwin.lib.darwinSystem {
+        specialArgs = {
           inherit username homeDirectory;
         };
+        modules = [
+          ./darwin.nix
+          home-manager.darwinModules.home-manager
+          {
+            home-manager = {
+              useGlobalPkgs = true;
+              useUserPackages = true;
+              extraSpecialArgs = {
+                inherit username homeDirectory inspired-mino-design-skills;
+              };
+              users.${username} = import ./home.nix;
+            };
+          }
+        ];
       };
     };
 }

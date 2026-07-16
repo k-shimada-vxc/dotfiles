@@ -21,6 +21,43 @@
         "type": "github"
       }
     },
+    "inspired-mino-design-skills": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1784082096,
+        "narHash": "sha256-0NlHVrk8kjy3h/Neam+G30KLv9h4Q/oZKVcdV+5NKG0=",
+        "owner": "my-take-dev",
+        "repo": "inspired-mino-design-skills",
+        "rev": "afffb23aeeb9aa206a508db6df857bd04d60cd7c",
+        "type": "github"
+      },
+      "original": {
+        "owner": "my-take-dev",
+        "repo": "inspired-mino-design-skills",
+        "type": "github"
+      }
+    },
+    "nix-darwin": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1772129556,
+        "narHash": "sha256-Utk0zd8STPsUJPyjabhzPc5BpPodLTXrwkpXBHYnpeg=",
+        "owner": "nix-darwin",
+        "repo": "nix-darwin",
+        "rev": "ebec37af18215214173c98cf6356d0aca24a2585",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-darwin",
+        "ref": "nix-darwin-25.11",
+        "repo": "nix-darwin",
+        "type": "github"
+      }
+    },
     "nixpkgs": {
       "locked": {
         "lastModified": 1772822230,
@@ -40,6 +77,8 @@
     "root": {
       "inputs": {
         "home-manager": "home-manager",
+        "inspired-mino-design-skills": "inspired-mino-design-skills",
+        "nix-darwin": "nix-darwin",
         "nixpkgs": "nixpkgs"
       }
     }
