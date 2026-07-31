@@ -1,1 +1,5 @@
 .DS_Store
+
+# darwin-rebuild build が生成する symlink
+result
+result-*
