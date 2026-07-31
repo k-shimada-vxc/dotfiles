@@ -23,6 +23,12 @@
     stateVersion = 6;
   };
 
+  # sudo を Touch ID で認証する。tmux 配下では pam_reattach がないと指紋要求が届かないため併用する。
+  security.pam.services.sudo_local = {
+    touchIdAuth = true;
+    reattach = true;
+  };
+
   users.users.${username} = {
     name = username;
     home = homeDirectory;
