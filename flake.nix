@@ -15,6 +15,10 @@
       url = "github:my-take-dev/inspired-mino-design-skills";
       flake = false;
     };
+    gh-stack = {
+      url = "github:github/gh-stack";
+      flake = false;
+    };
   };
 
   outputs =
@@ -22,6 +26,7 @@
       nix-darwin,
       home-manager,
       inspired-mino-design-skills,
+      gh-stack,
       ...
     }:
     let
@@ -41,7 +46,12 @@
               useGlobalPkgs = true;
               useUserPackages = true;
               extraSpecialArgs = {
-                inherit username homeDirectory inspired-mino-design-skills;
+                inherit
+                  username
+                  homeDirectory
+                  inspired-mino-design-skills
+                  gh-stack
+                  ;
               };
               users.${username} = import ./home.nix;
             };

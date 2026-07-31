@@ -4,6 +4,7 @@
   username,
   homeDirectory,
   inspired-mino-design-skills,
+  gh-stack,
   ...
 }:
 
@@ -14,6 +15,8 @@ let
 
   managedAgentSkills = {
     "gh-address-comments" = ./agents/skills/gh-address-comments;
+    # `gh skill install` は gh 2.74 に未実装なので、配布元の skill ディレクトリを直接 Nix 管理する。
+    "gh-stack" = gh-stack + "/skills/gh-stack";
     "git-commit" = ./agents/skills/git-commit;
     "go-test-quality-check" = ./agents/skills/go-test-quality-check;
     "notion-pb-to-design-doc" = ./agents/skills/notion-pb-to-design-doc;

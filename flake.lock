@@ -1,5 +1,21 @@
 {
   "nodes": {
+    "gh-stack": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1785424405,
+        "narHash": "sha256-RrVYkqUX0vKPUC0zextQSR+SG59j/HaILPZ/tBCXspQ=",
+        "owner": "github",
+        "repo": "gh-stack",
+        "rev": "8c9c8331309529e2114d4c34e77f4edea543f9fa",
+        "type": "github"
+      },
+      "original": {
+        "owner": "github",
+        "repo": "gh-stack",
+        "type": "github"
+      }
+    },
     "home-manager": {
       "inputs": {
         "nixpkgs": [
@@ -76,6 +92,7 @@
     },
     "root": {
       "inputs": {
+        "gh-stack": "gh-stack",
         "home-manager": "home-manager",
         "inspired-mino-design-skills": "inspired-mino-design-skills",
         "nix-darwin": "nix-darwin",
