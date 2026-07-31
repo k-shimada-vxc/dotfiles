@@ -210,11 +210,13 @@ in
   '';
 
   # Node.js の実行基盤だけを固定し、パッケージマネージャーは Corepack に委ねる。
+  # bun はランタイム兼パッケージマネージャーで Corepack の管理対象外なので、単独パッケージとして固定する。
   home.packages = [
     claudeCode
     codexCli
     nodejsPackage
     pkgs.bat
+    pkgs.bun
     pkgs.eza
     pkgs.fzf
     pkgs.ripgrep
