@@ -18,9 +18,44 @@ Use this as the default structure for PB-derived design tickets.
 
 Add `# 0. このPBで何が変わるか` only when a short summary materially improves readability.
 
+Add `# 0.1 このレビューで判断してほしいこと` whenever decisions still need someone else's call. Put it directly after `0.` so reviewers see it before the details.
+
 For small tickets, merge nearby sections rather than keeping empty headings. For schema/API changes, keep this order so readers see the problem and terms before field-level details.
 
+## Toggle Policy
+
+Which sections may be collapsed is a separate decision from what goes inside a toggle (see SKILL.md §3).
+
+- May be a toggle: `1. 背景と課題`, `3. 用語定義`, `5. 代替案と採用理由`, appendices.
+- Keep expanded: everything else. `10. テスト観点` in particular, even though older tickets collapse it.
+
+## Prose vs Structure
+
+Prose is not a defect. The reasoning a document preserves is its lasting value; flattening all of it into bullets means re-litigating the same decisions later. Split by what the text *is*, not by how long it is.
+
+- **Specification** — something an implementer turns into a checklist, or a reviewer marks pass/fail line by line → numbered list or table, conclusion first.
+- **Rationale** — why this option, what was rejected, what constraint forced it → prose, placed after the conclusion.
+
+Signs a paragraph needs splitting:
+
+- It carries more than two independently verifiable statements.
+- A sibling block at the same level is already a list. If 登録 is numbered and 更新 is a paragraph, they are the same kind of thing and should look alike.
+
+To find buried specifications, cross-check `10. テスト観点` against the rest of the document. For each viewpoint, find the specification it came from; if that lives in a paragraph rather than a list, table, or diagram, structure it. Specifications leak into 運用境界 and 移行 as well as 詳細設計.
+
+## Code References
+
+When the document cites file paths, line numbers, function names, or dependency versions, put a one-line note at the very top:
+
+> 本書のコード参照は YYYY-MM-DD 時点の `<branch>` のもの。実装着手時にズレている可能性がある。
+
 ## Recommended Content
+
+### 0.1 このレビューで判断してほしいこと
+
+- List only the items that cannot be settled by the document alone.
+- State explicitly that everything else is already decided.
+- Table columns: 判断事項 / 本書の想定 / 詳細セクション.
 
 ### 1. 背景と課題
 
@@ -34,7 +69,7 @@ For small tickets, merge nearby sections rather than keeping empty headings. For
 
 - What this ticket covers
 - What kinds of changes are included
-- Short note pointing to non-scope instead of listing every exclusion here
+- End with a one or two line summary of the main non-scope items, then point to `11. 非スコープ・残論点` for the full list
 
 ### 3. 用語定義
 
@@ -66,7 +101,12 @@ For small tickets, merge nearby sections rather than keeping empty headings. For
   - flowchart for processing, migration, or deletion/cascade flow
   - state diagram for lifecycle or transitional states
   - graph for DAG/order dependencies
+- Apply the split described in `Prose vs Structure`
 - Put rationale in toggles
+- Close with a 性能・規模 subsection when the change adds a query path, a view, an index-dependent list screen, or a batch operation:
+  - Expected row counts and how the number was derived
+  - Which indexes the new query path uses, and which access patterns have none
+  - How it will be verified, and whether that verification has happened yet
 
 ### 7. API / 権限 / 運用境界
 
@@ -126,6 +166,15 @@ Recommended columns:
 - `背景の詳細`
 - `判断理由`
 - `補足`
+
+### Revision history appendix
+
+Add a `付録. 改訂履歴` toggle once the document has been reviewed and revised at least once, so reviewers who read an earlier version can see what moved.
+
+Recommended columns:
+
+- date
+- what changed, in one or two sentences
 
 ### Mermaid diagram patterns
 
