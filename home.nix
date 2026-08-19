@@ -88,19 +88,19 @@ let
     };
   };
 
-  codexCliVersion = "0.145.0";
+  codexCliVersion = "0.147.0";
   codexCli = pkgs.stdenvNoCC.mkDerivation {
     pname = "openai-codex";
     version = codexCliVersion;
 
     src = pkgs.fetchurl {
       url = "https://registry.npmjs.org/@openai/codex/-/codex-${codexCliVersion}.tgz";
-      hash = "sha256-QWOZeWysNx0aAzsX80sIupslyPKYpbnQDhD3LDsSjI0=";
+      hash = "sha256-0otP1L2fB+pxCD0MxAxXlZXOu9TBC8jKmKbThUMuclU=";
     };
 
     codexDarwinArm64Src = pkgs.fetchurl {
       url = "https://registry.npmjs.org/@openai/codex/-/codex-${codexCliVersion}-darwin-arm64.tgz";
-      hash = "sha256-U/8QVdNco9yWTovtwkMeRsAGCPfI4UWyIhImSKek4+g=";
+      hash = "sha256-ST3i14jG/wHeIiMHx2cjHB5sgC1d2AhSNVD61tly9NM=";
     };
 
     dontConfigure = true;
