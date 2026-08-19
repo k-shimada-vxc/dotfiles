@@ -41,14 +41,14 @@ let
       }
     ) managedAgentSkills;
 
-  claudeCodeVersion = "2.1.220";
+  claudeCodeVersion = "2.1.227";
   claudeCode = pkgs.stdenvNoCC.mkDerivation {
     pname = "claude-code";
     version = claudeCodeVersion;
 
     src = pkgs.fetchurl {
       url = "https://downloads.claude.ai/claude-code-releases/${claudeCodeVersion}/darwin-arm64/claude";
-      hash = "sha256-it3IV/P+ZNWgNor57lAyG1CvtKaRi6PvAYq4T1274IE=";
+      hash = "sha256-dDJRG6O+gY4B8j9u74Yw0hSothhFHhiMPH1hqYfu9sc=";
     };
 
     dontUnpack = true;
