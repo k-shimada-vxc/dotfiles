@@ -14,6 +14,8 @@ let
   inspiredMinoSkillsRoot = inspired-mino-design-skills + "/.agents/skills";
 
   managedAgentSkills = {
+    "explain-diff-html" = ./agents/skills/explain-diff-html;
+    "explain-diff-notion" = ./agents/skills/explain-diff-notion;
     "gh-address-comments" = ./agents/skills/gh-address-comments;
     # `gh skill install` は gh 2.74 に未実装なので、配布元の skill ディレクトリを直接 Nix 管理する。
     "gh-stack" = gh-stack + "/skills/gh-stack";
@@ -219,6 +221,7 @@ in
     pkgs.bun
     pkgs.eza
     pkgs.fzf
+    pkgs.python3
     pkgs.ripgrep
     pkgs.starship
   ]
