@@ -1,0 +1,4 @@
+interface:
+  display_name: "Code Meaning Check"
+  short_description: "意味契約の確定と差分の照合"
+  default_prompt: "Use $code-meaning-check to fix the meaning contract before implementation (public vocabulary, value owners, derivations, forbidden states) and, after implementation, review the diff only against the approved contract."

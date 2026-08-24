@@ -14,6 +14,8 @@ let
   inspiredMinoSkillsRoot = inspired-mino-design-skills + "/.agents/skills";
 
   managedAgentSkills = {
+    "code-drift-check" = ./agents/skills/code-drift-check;
+    "code-meaning-check" = ./agents/skills/code-meaning-check;
     "explain-diff-html" = ./agents/skills/explain-diff-html;
     "explain-diff-notion" = ./agents/skills/explain-diff-notion;
     "gh-address-comments" = ./agents/skills/gh-address-comments;

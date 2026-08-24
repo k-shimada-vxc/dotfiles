@@ -1,0 +1,4 @@
+interface:
+  display_name: "Code Drift Check"
+  short_description: "実装への追随漏れを洗う"
+  default_prompt: "Use $code-drift-check to find where the implementation moved but comments, names, and elements did not follow: stale comments, dead exported code, hollowed-out tests, misleading names, contradictory invariant claims. Report findings by severity with file:line."
