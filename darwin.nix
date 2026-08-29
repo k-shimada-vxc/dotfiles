@@ -43,6 +43,7 @@
       "hashicorp/tap"
       "homebrew/bundle"
       "homebrew/services"
+      "stablyai/orca"
     ];
 
     brews = [
@@ -76,6 +77,9 @@
 
     casks = [
       "raycast"
+      # homebrew/cask の `orca` は plotly 製の別アプリなので、tap 名から完全修飾する。
+      # 本体は electron-updater が /Applications を書き換えるため、版の固定は行わない。
+      "stablyai/orca/orca"
       "tableplus"
       "warp"
     ];
