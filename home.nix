@@ -114,6 +114,8 @@ let
     dontConfigure = true;
     dontBuild = true;
 
+    nativeBuildInputs = [ pkgs.makeBinaryWrapper ];
+
     unpackPhase = ''
       runHook preUnpack
 
@@ -139,7 +141,9 @@ let
       chmod +x "$out/lib/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex"
 
       install -d "$out/bin"
-      ln -s "$out/lib/node_modules/@openai/codex/bin/codex.js" "$out/bin/codex"
+      # config.toml は Codex 自身が更新する可変設定なので、Nix 管理版の wrapper で更新確認だけを無効化する。
+      makeWrapper "$out/lib/node_modules/@openai/codex/bin/codex.js" "$out/bin/codex" \
+        --add-flags "-c check_for_update_on_startup=false"
 
       runHook postInstall
     '';
