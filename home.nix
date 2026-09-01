@@ -231,6 +231,7 @@ in
     pkgs.bun
     pkgs.eza
     pkgs.fzf
+    pkgs.nixfmt
     pkgs.python3
     pkgs.ripgrep
     pkgs.starship
