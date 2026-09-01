@@ -23,6 +23,7 @@ let
     "gh-stack" = gh-stack + "/skills/gh-stack";
     "git-commit" = ./agents/skills/git-commit;
     "go-test-quality-check" = ./agents/skills/go-test-quality-check;
+    "grilling" = ./agents/skills/grilling;
     "notion-pb-to-design-doc" = ./agents/skills/notion-pb-to-design-doc;
     # stablyai/orca の skills/orchestration は本体ガイドを `orca skills get` に委ねる stub のため、
     # 314MB のリポジトリを flake input にせず SKILL.md だけを取り込む。
