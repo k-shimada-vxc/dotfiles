@@ -22,7 +22,6 @@ let
     # `gh skill install` は gh 2.74 に未実装なので、配布元の skill ディレクトリを直接 Nix 管理する。
     "gh-stack" = gh-stack + "/skills/gh-stack";
     "git-commit" = ./agents/skills/git-commit;
-    "go-test-quality-check" = ./agents/skills/go-test-quality-check;
     "grilling" = ./agents/skills/grilling;
     "notion-pb-to-design-doc" = ./agents/skills/notion-pb-to-design-doc;
     # stablyai/orca の skills/orchestration は本体ガイドを `orca skills get` に委ねる stub のため、
