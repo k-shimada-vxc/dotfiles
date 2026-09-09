@@ -23,6 +23,10 @@
       url = "github:coldteadotai/pr-lens";
       flake = false;
     };
+    humanlayer-skills = {
+      url = "github:humanlayer/skills";
+      flake = false;
+    };
   };
 
   outputs =
@@ -32,6 +36,7 @@
       inspired-mino-design-skills,
       gh-stack,
       pr-lens,
+      humanlayer-skills,
       ...
     }:
     let
@@ -57,6 +62,7 @@
                   inspired-mino-design-skills
                   gh-stack
                   pr-lens
+                  humanlayer-skills
                   ;
               };
               users.${username} = import ./home.nix;

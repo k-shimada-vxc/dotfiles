@@ -6,6 +6,7 @@
   inspired-mino-design-skills,
   gh-stack,
   pr-lens,
+  humanlayer-skills,
   ...
 }:
 
@@ -36,6 +37,9 @@ let
     "notion-pb-to-design-doc" = ./agents/skills/notion-pb-to-design-doc;
     # skill 本体は markdown だけで、実処理は SKILL.md が呼ぶ pr-lens CLI 側にある。
     "pr-lens" = prLensSkill;
+    # 配布元は plugin 形式だが、plugin.json ごと取り込むと管理単位が skill と plugin で二重になる。
+    # skill ディレクトリだけを指して、他の skill と同じ扱いに揃える。
+    "show-me" = humanlayer-skills + "/plugins/show-me/skills/show-me";
   }
   // lib.genAttrs [
     "mino-architecture-quality-strategy"
