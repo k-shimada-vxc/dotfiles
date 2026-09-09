@@ -5,6 +5,7 @@
   homeDirectory,
   inspired-mino-design-skills,
   gh-stack,
+  pr-lens,
   ...
 }:
 
@@ -12,6 +13,15 @@ let
   nodejsPackage = if builtins.hasAttr "nodejs_22" pkgs then pkgs.nodejs_22 else pkgs.nodejs;
 
   inspiredMinoSkillsRoot = inspired-mino-design-skills + "/.agents/skills";
+
+  # 配布 package には test / build 設定も同梱されるため、skill として読ませる SKILL.md と
+  # references だけを取り出す。ディレクトリごと配ると skill 直下に無関係なファイルが並ぶ。
+  prLensSkill = pkgs.runCommandLocal "pr-lens-skill" { } ''
+    mkdir -p "$out"
+    cp -R ${pr-lens}/packages/agent-skill/SKILL.md \
+      ${pr-lens}/packages/agent-skill/references \
+      "$out"/
+  '';
 
   managedAgentSkills = {
     "code-drift-check" = ./agents/skills/code-drift-check;
@@ -24,6 +34,8 @@ let
     "git-commit" = ./agents/skills/git-commit;
     "grilling" = ./agents/skills/grilling;
     "notion-pb-to-design-doc" = ./agents/skills/notion-pb-to-design-doc;
+    # skill 本体は markdown だけで、実処理は SKILL.md が呼ぶ pr-lens CLI 側にある。
+    "pr-lens" = prLensSkill;
   }
   // lib.genAttrs [
     "mino-architecture-quality-strategy"

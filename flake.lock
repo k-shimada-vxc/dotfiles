@@ -90,13 +90,30 @@
         "type": "github"
       }
     },
+    "pr-lens": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1788962908,
+        "narHash": "sha256-7Y5K0TTPrdwDxkBzLrmSPXeM8bXakXyWxIMz+qNdX/g=",
+        "owner": "coldteadotai",
+        "repo": "pr-lens",
+        "rev": "e64166ea3848634a1ce5613862d5412fddbb52af",
+        "type": "github"
+      },
+      "original": {
+        "owner": "coldteadotai",
+        "repo": "pr-lens",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "gh-stack": "gh-stack",
         "home-manager": "home-manager",
         "inspired-mino-design-skills": "inspired-mino-design-skills",
         "nix-darwin": "nix-darwin",
-        "nixpkgs": "nixpkgs"
+        "nixpkgs": "nixpkgs",
+        "pr-lens": "pr-lens"
       }
     }
   },

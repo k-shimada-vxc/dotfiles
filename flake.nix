@@ -19,6 +19,10 @@
       url = "github:github/gh-stack";
       flake = false;
     };
+    pr-lens = {
+      url = "github:coldteadotai/pr-lens";
+      flake = false;
+    };
   };
 
   outputs =
@@ -27,6 +31,7 @@
       home-manager,
       inspired-mino-design-skills,
       gh-stack,
+      pr-lens,
       ...
     }:
     let
@@ -51,6 +56,7 @@
                   homeDirectory
                   inspired-mino-design-skills
                   gh-stack
+                  pr-lens
                   ;
               };
               users.${username} = import ./home.nix;
