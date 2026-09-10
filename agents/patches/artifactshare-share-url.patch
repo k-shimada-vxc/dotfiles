@@ -1,0 +1,16 @@
+--- a/SKILL.md
++++ b/SKILL.md
+@@ -112,8 +112,11 @@
+   If a successful result contains `data.warnings`, tell the user each warning
+   explicitly. `slack_reauthorization_required` means project Slack
+   notifications are not being delivered until the channel is reauthorized.
+-  In JSON output, give the user `data.artifact.url`; the artifact ID is
+-  `data.artifact.id`.
++  In JSON output, build the link yourself from the configured base URL and
++  `data.artifact.id`, as `<base-url>/a/<id>`. Do not pass on
++  `data.artifact.url`: this workspace's upload endpoint fills it in with the
++  wrong host, so the link it gives you does not open. `artifacts list` reports
++  the same artifact's `share_url` correctly if you need to check one.
+   Do not rerun `share` just to inspect the JSON shape: without `--key`, each
+   successful run creates a new artifact.
+ - Pick the destination with `--project-id <id>`, `--project <name>` (by exact

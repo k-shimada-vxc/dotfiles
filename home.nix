@@ -109,10 +109,17 @@ let
   # そのままでは Nix で固定した版と実行される版が食い違う。PATH 上の固定版を
   # 直接呼ぶ形へ書き換えて、skill と CLI のバージョンを一致させる。
   # Cursor 用の .mdc は同じ内容の別形式なので、SKILL.md だけを skill として配る。
+  #
+  # 社内インスタンスの upload endpoint は share 応答の URL を localhost で返す
+  # （同じ artifact でも artifacts list の share_url は正しい）。応答をそのまま
+  # 渡すと開けないリンクを手渡すことになるので、base URL と id から組む指示に変える。
+  # 一括置換は substituteInPlace、文面の入れ替えは patch と、変更の性質で使い分ける。
+  # patch は pristine な upstream に当てるため、置換より先に適用する。
   artifactshareSkill = pkgs.runCommandLocal "artifactshare-skill" { } ''
     mkdir -p "$out"
     cp ${artifactshareCli}/lib/node_modules/@artifactshare/cli/skills/artifactshare/SKILL.md "$out"/
     chmod +w "$out/SKILL.md"
+    patch -p1 -F0 -d "$out" < ${./agents/patches/artifactshare-share-url.patch}
     substituteInPlace "$out/SKILL.md" \
       --replace-fail "npm exec --yes --package=@artifactshare/cli -- artifactshare" "artifactshare"
   '';
