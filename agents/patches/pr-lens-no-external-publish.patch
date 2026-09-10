@@ -1,0 +1,47 @@
+--- a/SKILL.md
++++ b/SKILL.md
+@@ -33,15 +33,17 @@
+ 
+    Render dark as the default theme unless explicitly requested. The SVGs, the manifest and `drawn.graph.json` land in `.pr-lens/`, which the CLI adds to the repository's .gitignore. Do not commit any of it. These files are rebuilt from the diff whenever anyone wants them again. Each SVG is named after its view, the theme and a content hash; `manifest.json` lists them by lens and view, so read the names from there or from the directory.
+ 
+-   If the user asked for a diagram, an explanation or a picture of the architecture and nothing more, put it on a canvas and hand back the link:
++   Never put the diagram on a canvas. `pr-lens-cli canvas push` uploads the document to prlens.dev and hands back a link that opens without a login, so it publishes internal architecture, file paths and identifiers outside the company. This holds even though the CLI still ships the command and its `--help` still describes it.
+ 
++   Publish to the company's Artifact Share instance instead. `share` needs an entry page, so first write `.pr-lens/index.html` embedding the rendered SVGs, one `<img>` per view, reading the file names from `manifest.json`. Then:
++
+    ```bash
+-   npx @coldtea/pr-lens-cli@latest canvas push
++   artifactshare share .pr-lens --key <repo>-<branch> --json
+    ```
+ 
+-   This pushes `.pr-lens/drawn.graph.json` and prints three links. Give the user the view link, `https://prlens.dev/c/{id}`: that is the diagram, full screen, every view on one page, and it opens without a login. The edit link, the one ending in `#w=…`, lets its holder push over the canvas, so leave it out of the reply unless they ask, and never paste it anywhere public. The embed link serves the top view as an SVG for a README.
++   Give the user `data.artifact.url`. `--key` makes this create-or-update, so a follow-up such as "rename that node" is: edit the document, validate, render, share again with the same key. The link stays the same.
+ 
+-   Pushing the same file again updates the same canvas, so a follow-up such as "rename that node" or "add the queue" is: edit the document, validate, render, push. The link stays the same. If the push fails, say so and tell them where the SVGs are and which one is the top view.
++   If Artifact Share is not set up, say so and hand back the SVG paths in `.pr-lens/`. Do not reach for another host.
+ 
+ 5. **Attach, when there is a pull request to attach to.** That means the user asked you to open a PR, asked for a diagram on one that exists, or you are opening a PR as part of changes made. Otherwise skip this step.
+ 
+@@ -67,19 +69,12 @@
+ 
+    Attach the views a reviewer needs and leave the rest in `.pr-lens/`: the top architecture view first, then a data flow if the change has a sequence worth following. A body with four diagrams reads worse than one with two, except the four are really needed to understand the change e.g., in the case of a complex feature or refactor.
+ 
+-   When `--attach` is not an option, publish the SVGs somewhere durable and let the CLI compose the comment instead:
++   `--attach` is the only way to put the diagram itself on a pull request. Never give `--asset-base-url` a public host such as `raw.githubusercontent.com`: making the SVGs fetchable that way publishes internal architecture outside the company.
+ 
+-   ```bash
+-   npx @coldtea/pr-lens-cli@latest comment \
+-     --graph .pr-lens/drawn.graph.json \
+-     --manifest .pr-lens/manifest.json \
+-     --asset-base-url https://raw.githubusercontent.com/<owner>/<repo>/<branch>/<dir>
+-   ```
++   Inlining them from the company's Artifact Share instance does not work either. GitHub fetches markdown images through its own server-side proxy, which cannot reach an internal host, so the reviewer gets broken images. So when `--attach` is unavailable, publish to Artifact Share as in step 4 and post that link on the pull request instead of inline images.
+ 
+-   `--graph` takes `drawn.graph.json`, not the document you wrote, because corrections change what the diagrams show and the CLI refuses a document its manifest does not describe. `--asset-base-url` is where you published the SVGs; leave it out and the markdown points at local paths no reader can fetch. The markdown goes to stdout, with each diagram as a `<picture>` pair; posting it is your business.
++Never run `pr-lens-cli analyze`. It hands steps 1 and 2 to a third-party provider — Gemini, OpenAI, or any endpoint speaking `/chat/completions` — which sends the change under review outside the company. Author the document yourself.
+ 
+-If you would rather not author the document yourself, `npx @coldtea/pr-lens-cli@latest analyze --base <ref>` does steps 1 and 2 by asking a provider — Gemini, OpenAI, or any endpoint speaking `/chat/completions` — with a key of your own. That is the only path here that needs one.
+-
+ ## The pull request body, when there is one
+ 
+ A reviewer should understand the change before reading the diff, so the diagram goes where they look first: the description, not a trailing comment. Open with one sentence on why the change exists, then the architecture diagram, then whatever proves the change works, such as a screenshot of the result or a recording of the interaction. Use one visual per idea. A diagram that needs a paragraph of explanation has a document problem; go back to step 2.

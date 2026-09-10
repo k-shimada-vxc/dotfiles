@@ -17,11 +17,21 @@ let
 
   # 配布 package には test / build 設定も同梱されるため、skill として読ませる SKILL.md と
   # references だけを取り出す。ディレクトリごと配ると skill 直下に無関係なファイルが並ぶ。
+  #
+  # canvas push は prlens.dev へ document を上げてログイン不要の公開リンクを返し、
+  # analyze は差分を第三者の model provider へ送り、comment --asset-base-url は
+  # SVG を公開ホストへ置くことを前提にする。いずれも社内情報が社外へ出るため、
+  # 手順そのものを禁止文と社内 Artifact Share 経由の代替へ差し替える。
+  # substituteInPlace ではなく patch なのは、削除する範囲が段落単位で広く、
+  # 差分として読めるほうが意図を追いやすいため。
+  # fuzz を切っているので upstream が該当箇所を書き換えればビルドが落ち、追従漏れに気づける。
   prLensSkill = pkgs.runCommandLocal "pr-lens-skill" { } ''
     mkdir -p "$out"
     cp -R ${pr-lens}/packages/agent-skill/SKILL.md \
       ${pr-lens}/packages/agent-skill/references \
       "$out"/
+    chmod +w "$out/SKILL.md"
+    patch -p1 -F0 -d "$out" < ${./agents/patches/pr-lens-no-external-publish.patch}
   '';
 
   artifactshareCliVersion = "0.13.3";
