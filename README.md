@@ -37,13 +37,14 @@ sam --version
 
 ## pin している CLI を更新する
 
-`home.nix` で pin している Claude Code と Codex CLI のバージョン・hash を更新する。
+`home.nix` で pin している Claude Code、Codex CLI、Artifact Share CLI のバージョン・hash を更新する。
 
 ```sh
-./scripts/update-pinned-cli.sh                 # 両方を更新して nix build まで検証
-./scripts/update-pinned-cli.sh claude-code     # Claude Code のみ
+./scripts/update-pinned-cli.sh                   # すべて更新して nix build まで検証
+./scripts/update-pinned-cli.sh claude-code       # Claude Code のみ
+./scripts/update-pinned-cli.sh artifactshare     # Artifact Share CLI のみ
 ./scripts/update-pinned-cli.sh --channel latest  # Claude Code を latest チャネルで追う
-./scripts/update-pinned-cli.sh --no-build      # 書き換えのみ
+./scripts/update-pinned-cli.sh --no-build        # 書き換えのみ
 ```
 
 適用（`darwin-rebuild switch`）とコミットは手動で行う。

@@ -14,11 +14,12 @@ run_build=1
 
 usage() {
   cat <<'USAGE'
-Usage: scripts/update-pinned-cli.sh [claude-code|codex|all] [--channel stable|latest] [--no-build]
+Usage: scripts/update-pinned-cli.sh [claude-code|codex|artifactshare|all] [--channel stable|latest] [--no-build]
 
-  claude-code   Claude Code のみ更新
-  codex         Codex CLI のみ更新
-  all           両方更新 (既定)
+  claude-code    Claude Code のみ更新
+  codex          Codex CLI のみ更新
+  artifactshare  Artifact Share CLI のみ更新
+  all            すべて更新 (既定)
 
   --channel     Claude Code の追従チャネル (既定: stable)
   --no-build    nix build による検証を省略
@@ -27,7 +28,7 @@ USAGE
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    claude-code | codex | all) target="$1" ;;
+    claude-code | codex | artifactshare | all) target="$1" ;;
     --channel) channel="${2:?--channel には stable か latest を指定する}" && shift ;;
     --channel=*) channel="${1#*=}" ;;
     --no-build) run_build=0 ;;
@@ -52,7 +53,8 @@ case "$channel" in
     ;;
 esac
 
-for cmd in curl jq nix perl; do
+# npm は artifactshare の依存 range を実バージョンへ解決するためだけに使う。
+for cmd in curl jq nix npm perl; do
   command -v "$cmd" >/dev/null || {
     echo "$cmd が見つからない" >&2
     exit 1
@@ -137,12 +139,60 @@ update_codex() {
   replace_version codexCliVersion "$latest"
 }
 
+# CLI が宣言する range を実バージョンへ解決し、変わっていれば pin を差し替える。
+# 対象は CLI が bundle しない依存だけで、range 据え置きなら何もしない。
+update_artifactshare_dep() {
+  local name="$1" attr="$2" url_template="$3" manifest="$4"
+  local range resolved current
+
+  range="$(jq -r ".dependencies.\"$name\"" <<<"$manifest")"
+  resolved="$(npm view "$name@$range" version --json | jq -r 'if type == "array" then .[-1] else . end')"
+  require_semver "$name" "$resolved"
+  current="$(current_version "$attr")"
+
+  [[ "$resolved" == "$current" ]] && return 0
+
+  echo "artifactshare $name: $current -> $resolved"
+  replace_hash_after_url "$url_template" \
+    "$(prefetch_hash "https://registry.npmjs.org/$name/-/$name-$resolved.tgz")"
+  replace_version "$attr" "$resolved"
+}
+
+# shellcheck disable=SC2016
+update_artifactshare() {
+  local latest current manifest
+  latest="$(curl -fsSL https://registry.npmjs.org/@artifactshare/cli/latest | jq -r '.version')"
+  require_semver artifactshare "$latest"
+  current="$(current_version artifactshareCliVersion)"
+
+  if [[ "$latest" == "$current" ]]; then
+    echo "artifactshare: $current は最新"
+    return 1
+  fi
+
+  manifest="$(curl -fsSL "https://registry.npmjs.org/@artifactshare/cli/$latest")"
+
+  echo "artifactshare: $current -> $latest"
+  replace_hash_after_url \
+    'https://registry.npmjs.org/@artifactshare/cli/-/cli-${artifactshareCliVersion}.tgz' \
+    "$(prefetch_hash "https://registry.npmjs.org/@artifactshare/cli/-/cli-$latest.tgz")"
+  replace_version artifactshareCliVersion "$latest"
+
+  update_artifactshare_dep gunshi artifactshareGunshiVersion \
+    'https://registry.npmjs.org/gunshi/-/gunshi-${artifactshareGunshiVersion}.tgz' "$manifest"
+  update_artifactshare_dep undici artifactshareUndiciVersion \
+    'https://registry.npmjs.org/undici/-/undici-${artifactshareUndiciVersion}.tgz' "$manifest"
+}
+
 updated=0
 if [[ "$target" == "all" || "$target" == "claude-code" ]]; then
   update_claude_code && updated=1
 fi
 if [[ "$target" == "all" || "$target" == "codex" ]]; then
   update_codex && updated=1
+fi
+if [[ "$target" == "all" || "$target" == "artifactshare" ]]; then
+  update_artifactshare && updated=1
 fi
 
 if [[ "$updated" -eq 0 ]]; then
