@@ -4,8 +4,5 @@
 result
 result-*
 
-# PR Lens の生成物。render で作り直せる。
-# graph.json だけは手書きの正本で、差分から再生成する analyze は禁止しているため追跡する。
-# ディレクトリ自体を除外すると配下を再包含できないので、中身を対象にする。
-.pr-lens/*
-!.pr-lens/graph.json
+# PR Lens writes its previews here. They are rebuilt on demand.
+.pr-lens/
