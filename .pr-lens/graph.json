@@ -1,0 +1,905 @@
+{
+  "schemaVersion": "0.1.1",
+  "kind": "graph",
+  "title": "dotfiles の Nix 管理の仕組み",
+  "summary": "外部から来る CLI と skill を、必ず home.nix の derivation を通してから $HOME へ配る仕組み。tarball は hash で固定し、配布物の文面は derivation の中で書き換える。skill は 1 つの attrset に集約され、Claude Code と Codex の両方へ symlink で届く。",
+  "lenses": [
+    "architecture",
+    "data-flow"
+  ],
+  "provenance": {
+    "repo": {
+      "owner": "k-shimada-vxc",
+      "name": "dotfiles",
+      "host": "github.com"
+    },
+    "base": {
+      "sha": "9aca92ef4a80410b5a9b29954591e7e90175d0f4",
+      "ref": "main"
+    },
+    "head": {
+      "sha": "baa20d338c360157986cd0f5630724861182c556",
+      "ref": "main"
+    }
+  },
+  "lanes": [
+    {
+      "id": "upstream",
+      "label": "Upstream",
+      "subtitle": "npm · GitHub · Anthropic",
+      "order": 0
+    },
+    {
+      "id": "repo",
+      "label": "dotfiles",
+      "subtitle": "flake.nix · home.nix · agents/",
+      "order": 1
+    },
+    {
+      "id": "eval",
+      "label": "Nix evaluation",
+      "subtitle": "home.nix の let 束縛",
+      "order": 2
+    },
+    {
+      "id": "home",
+      "label": "$HOME",
+      "subtitle": "home-manager が配る先",
+      "order": 3
+    }
+  ],
+  "nodes": [
+    {
+      "id": "npm-registry",
+      "label": "registry.npmjs.org",
+      "kind": "external",
+      "delta": "unchanged",
+      "lane": "upstream",
+      "subtitle": "npm tarball",
+      "summary": "artifactshare / gunshi / undici / codex の tarball 取得元。バージョンと hash を home.nix に書いて参照する。",
+      "badges": []
+    },
+    {
+      "id": "claude-releases",
+      "label": "downloads.claude.ai",
+      "kind": "external",
+      "delta": "unchanged",
+      "lane": "upstream",
+      "subtitle": "Claude Code のバイナリ",
+      "summary": "darwin-arm64 の実行ファイルを直接取得する。",
+      "badges": []
+    },
+    {
+      "id": "skill-repos",
+      "label": "skill 配布元リポジトリ",
+      "kind": "external",
+      "delta": "unchanged",
+      "lane": "upstream",
+      "subtitle": "flake = false の 4 input",
+      "summary": "inspired-mino-design-skills · gh-stack · pr-lens · humanlayer-skills。flake ではなくソースツリーとして取り込む。",
+      "badges": []
+    },
+    {
+      "id": "flake-inputs",
+      "label": "flake.nix inputs",
+      "kind": "config",
+      "delta": "unchanged",
+      "lane": "repo",
+      "subtitle": "7 input · flake.lock で固定",
+      "summary": "nixpkgs / home-manager / nix-darwin と、skill 配布元の 4 リポジトリ。revision は flake.lock が持つ。",
+      "files": [
+        {
+          "path": "flake.nix"
+        }
+      ],
+      "badges": []
+    },
+    {
+      "id": "darwin-config",
+      "label": "darwinConfigurations",
+      "kind": "app",
+      "delta": "unchanged",
+      "lane": "repo",
+      "subtitle": "VX-NT-0969",
+      "summary": "nix-darwin に home-manager モジュールを載せ、home.nix へ username と homeDirectory を渡す入口。",
+      "files": [
+        {
+          "path": "flake.nix"
+        }
+      ],
+      "badges": []
+    },
+    {
+      "id": "local-skills",
+      "label": "agents/skills",
+      "kind": "package",
+      "delta": "unchanged",
+      "lane": "repo",
+      "subtitle": "自作 8 skill",
+      "summary": "git-commit や code-drift-check など、このリポジトリが正本を持つ skill。",
+      "files": [
+        {
+          "path": "agents/skills"
+        }
+      ],
+      "badges": []
+    },
+    {
+      "id": "instructions-src",
+      "label": "agents/instructions/common.md",
+      "kind": "config",
+      "delta": "unchanged",
+      "lane": "repo",
+      "subtitle": "エージェント横断の指示",
+      "summary": "1 ファイルを正本にして、Claude Code と Codex の両方の標準パスへ配る。",
+      "files": [
+        {
+          "path": "agents/instructions/common.md"
+        }
+      ],
+      "badges": []
+    },
+    {
+      "id": "egress-patch",
+      "label": "agents/patches/",
+      "kind": "config",
+      "delta": "added",
+      "lane": "repo",
+      "subtitle": "2 patch · fuzz なしで適用",
+      "summary": "配布 skill の文面を差し替える差分。pr-lens からは canvas push · analyze · --asset-base-url の手順を落とし、artifactshare には開けない share URL を手渡さない指示を入れる。fuzz なしなので upstream が該当箇所を変えればビルドが落ちる。",
+      "files": [
+        {
+          "path": "agents/patches"
+        }
+      ],
+      "badges": [
+        "new"
+      ]
+    },
+    {
+      "id": "update-script",
+      "label": "update-pinned-cli.sh",
+      "kind": "job",
+      "delta": "modified",
+      "lane": "repo",
+      "subtitle": "pin の更新経路",
+      "summary": "最新版と hash を取り直して home.nix を書き換える。artifactshare では CLI が宣言する依存 range も解決して gunshi と undici の pin を追随させる。",
+      "files": [
+        {
+          "path": "scripts/update-pinned-cli.sh"
+        }
+      ],
+      "badges": []
+    },
+    {
+      "id": "artifactshare-cli",
+      "label": "artifactshareCli",
+      "kind": "package",
+      "delta": "added",
+      "lane": "eval",
+      "subtitle": "3 tarball → node_modules",
+      "summary": "CLI 本体と bundle されない gunshi · undici を 1 つの derivation にまとめ、bin/artifactshare を出す。shebang は Nix の Node.js へ固定する。",
+      "files": [
+        {
+          "path": "home.nix"
+        }
+      ],
+      "badges": [
+        "0.13.3"
+      ]
+    },
+    {
+      "id": "artifactshare-skill",
+      "label": "artifactshareSkill",
+      "kind": "module",
+      "delta": "added",
+      "lane": "eval",
+      "subtitle": "SKILL.md を書き換え",
+      "summary": "同梱 SKILL.md の npm exec 起動 46 箇所を PATH 上の固定 CLI へ置換し、share URL の受け渡しを patch で直す。一括置換は substituteInPlace、文面の入れ替えは patch と、変更の性質で使い分ける。",
+      "files": [
+        {
+          "path": "home.nix"
+        }
+      ],
+      "badges": [
+        "new"
+      ]
+    },
+    {
+      "id": "pr-lens-skill",
+      "label": "prLensSkill",
+      "kind": "module",
+      "delta": "modified",
+      "lane": "eval",
+      "subtitle": "patch 適用",
+      "summary": "配布 package から SKILL.md と references だけを取り出し、社外公開の手順を落とす patch を当てる。",
+      "files": [
+        {
+          "path": "home.nix"
+        }
+      ],
+      "badges": []
+    },
+    {
+      "id": "claude-code",
+      "label": "claudeCode",
+      "kind": "package",
+      "delta": "unchanged",
+      "lane": "eval",
+      "subtitle": "wrapProgram で環境を固定",
+      "summary": "自動更新と導入チェックを切り、ripgrep などの補助コマンドを Nix 側から解決させる。",
+      "files": [
+        {
+          "path": "home.nix"
+        }
+      ],
+      "badges": [
+        "2.1.250"
+      ]
+    },
+    {
+      "id": "codex-cli",
+      "label": "codexCli",
+      "kind": "package",
+      "delta": "unchanged",
+      "lane": "eval",
+      "subtitle": "makeWrapper で起動時確認を無効化",
+      "summary": "npm 版の wrapper を使いつつ、実行時の Node.js を Nix 管理のものへ固定する。",
+      "files": [
+        {
+          "path": "home.nix"
+        }
+      ],
+      "badges": [
+        "0.153.4"
+      ]
+    },
+    {
+      "id": "managed-agent-skills",
+      "label": "managedAgentSkills",
+      "kind": "config",
+      "delta": "modified",
+      "lane": "eval",
+      "subtitle": "skill 名 → source",
+      "summary": "19 skill を 1 つの attrset に集約する。ローカル 8、flake input の直参照 2、inspired-mino 7、derivation 2。",
+      "files": [
+        {
+          "path": "home.nix"
+        }
+      ],
+      "badges": []
+    },
+    {
+      "id": "managed-skill-links",
+      "label": "managedSkillLinks",
+      "kind": "function",
+      "delta": "unchanged",
+      "lane": "eval",
+      "subtitle": "attrset → home.file",
+      "summary": "配布先ルートを受け取り、skill ごとに 1 本の home.file エントリへ写す。Claude Code 用と Codex 用で 2 回呼ぶ。",
+      "files": [
+        {
+          "path": "home.nix"
+        }
+      ],
+      "badges": []
+    },
+    {
+      "id": "claude-skills",
+      "label": "~/.claude/skills",
+      "kind": "config",
+      "delta": "modified",
+      "lane": "home",
+      "subtitle": "19 symlink",
+      "summary": "Claude Code が読む skill。Nix 管理外は orchestration の 1 件だけ。",
+      "badges": []
+    },
+    {
+      "id": "agents-skills",
+      "label": "~/.agents/skills",
+      "kind": "config",
+      "delta": "modified",
+      "lane": "home",
+      "subtitle": "19 symlink",
+      "summary": "Codex が読む skill。Claude Code 側と同じ attrset から配られるので内容が一致する。",
+      "badges": []
+    },
+    {
+      "id": "common-instructions",
+      "label": "CLAUDE.md / AGENTS.md",
+      "kind": "config",
+      "delta": "unchanged",
+      "lane": "home",
+      "subtitle": "両ツールの標準パス",
+      "summary": "同じ common.md が ~/.claude/CLAUDE.md と ~/.codex/AGENTS.md として置かれる。",
+      "badges": []
+    },
+    {
+      "id": "user-profile",
+      "label": "per-user profile",
+      "kind": "package",
+      "delta": "modified",
+      "lane": "home",
+      "subtitle": "home.packages · 12 件",
+      "summary": "artifactshare · claude · codex · node などが PATH に載る。npx で都度取得する必要がなくなる。",
+      "badges": []
+    }
+  ],
+  "edges": [
+    {
+      "id": "repos-to-inputs",
+      "from": "skill-repos",
+      "to": "flake-inputs",
+      "kind": "dependency",
+      "delta": "unchanged",
+      "label": "flake = false",
+      "emphasis": "normal",
+      "animated": false
+    },
+    {
+      "id": "npm-to-ascli",
+      "from": "npm-registry",
+      "to": "artifactshare-cli",
+      "kind": "dependency",
+      "delta": "added",
+      "label": "fetchurl · sha256",
+      "emphasis": "normal",
+      "animated": true
+    },
+    {
+      "id": "npm-to-codex",
+      "from": "npm-registry",
+      "to": "codex-cli",
+      "kind": "dependency",
+      "delta": "unchanged",
+      "label": "fetchurl · sha256",
+      "emphasis": "normal",
+      "animated": false
+    },
+    {
+      "id": "releases-to-claude",
+      "from": "claude-releases",
+      "to": "claude-code",
+      "kind": "dependency",
+      "delta": "unchanged",
+      "label": "fetchurl · sha256",
+      "emphasis": "normal",
+      "animated": false
+    },
+    {
+      "id": "inputs-to-prlens",
+      "from": "flake-inputs",
+      "to": "pr-lens-skill",
+      "kind": "dependency",
+      "delta": "unchanged",
+      "label": "packages/agent-skill",
+      "emphasis": "normal",
+      "animated": false
+    },
+    {
+      "id": "patch-to-prlens",
+      "from": "egress-patch",
+      "to": "pr-lens-skill",
+      "kind": "data",
+      "delta": "added",
+      "label": "patch -p1 -F0",
+      "emphasis": "hero",
+      "animated": true,
+      "summary": "社外公開の手順をここで落とす。Nix 管理下に置いたから、配布物の文面まで固定できる。upstream が該当箇所を書き換えればビルドが落ちる。"
+    },
+    {
+      "id": "ascli-to-asskill",
+      "from": "artifactshare-cli",
+      "to": "artifactshare-skill",
+      "kind": "dependency",
+      "delta": "added",
+      "label": "同梱 SKILL.md",
+      "emphasis": "normal",
+      "animated": false
+    },
+    {
+      "id": "asskill-to-mas",
+      "from": "artifactshare-skill",
+      "to": "managed-agent-skills",
+      "kind": "dependency",
+      "delta": "added",
+      "emphasis": "normal",
+      "animated": false
+    },
+    {
+      "id": "prlens-to-mas",
+      "from": "pr-lens-skill",
+      "to": "managed-agent-skills",
+      "kind": "dependency",
+      "delta": "unchanged",
+      "emphasis": "normal",
+      "animated": false
+    },
+    {
+      "id": "local-to-mas",
+      "from": "local-skills",
+      "to": "managed-agent-skills",
+      "kind": "dependency",
+      "delta": "unchanged",
+      "label": "8 skill",
+      "emphasis": "normal",
+      "animated": false
+    },
+    {
+      "id": "inputs-to-mas",
+      "from": "flake-inputs",
+      "to": "managed-agent-skills",
+      "kind": "dependency",
+      "delta": "unchanged",
+      "label": "gh-stack · show-me · mino 7",
+      "emphasis": "normal",
+      "animated": false
+    },
+    {
+      "id": "mas-to-links",
+      "from": "managed-agent-skills",
+      "to": "managed-skill-links",
+      "kind": "call",
+      "delta": "unchanged",
+      "label": "mapAttrs'",
+      "emphasis": "normal",
+      "animated": false
+    },
+    {
+      "id": "links-to-claude",
+      "from": "managed-skill-links",
+      "to": "claude-skills",
+      "kind": "data",
+      "delta": "modified",
+      "label": "symlink",
+      "emphasis": "normal",
+      "animated": true
+    },
+    {
+      "id": "links-to-agents",
+      "from": "managed-skill-links",
+      "to": "agents-skills",
+      "kind": "data",
+      "delta": "modified",
+      "label": "symlink",
+      "emphasis": "normal",
+      "animated": true
+    },
+    {
+      "id": "instructions-to-home",
+      "from": "instructions-src",
+      "to": "common-instructions",
+      "kind": "data",
+      "delta": "unchanged",
+      "label": "home.file",
+      "emphasis": "normal",
+      "animated": false
+    },
+    {
+      "id": "ascli-to-profile",
+      "from": "artifactshare-cli",
+      "to": "user-profile",
+      "kind": "dependency",
+      "delta": "added",
+      "label": "home.packages",
+      "emphasis": "normal",
+      "animated": false
+    },
+    {
+      "id": "claude-to-profile",
+      "from": "claude-code",
+      "to": "user-profile",
+      "kind": "dependency",
+      "delta": "unchanged",
+      "emphasis": "normal",
+      "animated": false
+    },
+    {
+      "id": "codex-to-profile",
+      "from": "codex-cli",
+      "to": "user-profile",
+      "kind": "dependency",
+      "delta": "unchanged",
+      "emphasis": "normal",
+      "animated": false
+    },
+    {
+      "id": "darwin-to-inputs",
+      "from": "darwin-config",
+      "to": "flake-inputs",
+      "kind": "dependency",
+      "delta": "unchanged",
+      "label": "specialArgs",
+      "emphasis": "normal",
+      "animated": false
+    },
+    {
+      "id": "script-to-ascli",
+      "from": "update-script",
+      "to": "artifactshare-cli",
+      "kind": "data",
+      "delta": "added",
+      "label": "version + hash",
+      "emphasis": "muted",
+      "animated": false
+    },
+    {
+      "id": "script-to-claude",
+      "from": "update-script",
+      "to": "claude-code",
+      "kind": "data",
+      "delta": "unchanged",
+      "emphasis": "muted",
+      "animated": false
+    },
+    {
+      "id": "script-to-codex",
+      "from": "update-script",
+      "to": "codex-cli",
+      "kind": "data",
+      "delta": "unchanged",
+      "emphasis": "muted",
+      "animated": false
+    },
+    {
+      "id": "patch-to-asskill",
+      "from": "egress-patch",
+      "to": "artifactshare-skill",
+      "kind": "data",
+      "delta": "added",
+      "label": "patch -p1 -F0",
+      "emphasis": "normal",
+      "animated": false
+    }
+  ],
+  "flows": [
+    {
+      "id": "switch",
+      "title": "darwin-rebuild switch が走るとき",
+      "summary": "artifactshare を例に、upstream の tarball が ~/.claude/skills の symlink になるまで。",
+      "delta": "added",
+      "participants": [
+        {
+          "node": "darwin-config",
+          "label": "darwin-rebuild"
+        },
+        {
+          "node": "npm-registry",
+          "label": "npm"
+        },
+        {
+          "node": "artifactshare-cli",
+          "label": "artifactshareCli"
+        },
+        {
+          "node": "artifactshare-skill",
+          "label": "artifactshareSkill"
+        },
+        {
+          "node": "managed-skill-links",
+          "label": "managedSkillLinks"
+        },
+        {
+          "node": "claude-skills",
+          "label": "~/.claude/skills"
+        }
+      ],
+      "messages": [
+        {
+          "id": "eval",
+          "from": "darwin-config",
+          "to": "artifactshare-cli",
+          "label": "derivation を評価",
+          "kind": "sync",
+          "delta": "unchanged",
+          "animated": true
+        },
+        {
+          "id": "fetch",
+          "from": "artifactshare-cli",
+          "to": "npm-registry",
+          "label": "3 tarball を hash 指定で要求",
+          "kind": "sync",
+          "delta": "added",
+          "animated": true
+        },
+        {
+          "id": "tarballs",
+          "from": "npm-registry",
+          "to": "artifactshare-cli",
+          "label": "cli · gunshi · undici",
+          "kind": "return",
+          "delta": "added",
+          "animated": true,
+          "note": "hash が合わなければここで止まる。"
+        },
+        {
+          "id": "pin-node",
+          "from": "artifactshare-cli",
+          "to": "artifactshare-cli",
+          "label": "shebang を Nix の Node.js へ固定",
+          "kind": "self",
+          "delta": "added",
+          "animated": true
+        },
+        {
+          "id": "take-skill",
+          "from": "artifactshare-cli",
+          "to": "artifactshare-skill",
+          "label": "同梱 SKILL.md を取り出す",
+          "kind": "sync",
+          "delta": "added",
+          "animated": true
+        },
+        {
+          "id": "rewrite",
+          "from": "artifactshare-skill",
+          "to": "artifactshare-skill",
+          "label": "npm exec 46 箇所を書き換え",
+          "kind": "self",
+          "delta": "added",
+          "animated": true,
+          "note": "skill と CLI の版がずれなくなる。"
+        },
+        {
+          "id": "register",
+          "from": "artifactshare-skill",
+          "to": "managed-skill-links",
+          "label": "managedAgentSkills 経由で登録",
+          "kind": "async",
+          "delta": "added",
+          "animated": true
+        },
+        {
+          "id": "link",
+          "from": "managed-skill-links",
+          "to": "claude-skills",
+          "label": "symlink を張る",
+          "kind": "async",
+          "delta": "modified",
+          "animated": true,
+          "repeat": 19
+        },
+        {
+          "id": "activated",
+          "from": "claude-skills",
+          "to": "darwin-config",
+          "label": "generation 有効化",
+          "kind": "return",
+          "delta": "unchanged",
+          "animated": false
+        }
+      ]
+    }
+  ],
+  "stats": {
+    "chips": [
+      {
+        "label": "Nix 管理の skill",
+        "value": "19",
+        "tone": "hero"
+      },
+      {
+        "label": "固定した CLI",
+        "value": "3",
+        "tone": "added"
+      },
+      {
+        "label": "flake input",
+        "value": "7",
+        "tone": "neutral"
+      }
+    ]
+  },
+  "views": [
+    {
+      "id": "mechanism",
+      "title": "全体像 — upstream から $HOME まで",
+      "lens": "architecture",
+      "summary": "外部ソースが $HOME へ直行する経路はなく、必ず評価層を通る。",
+      "scope": {
+        "kind": "all"
+      },
+      "defaultOpen": true,
+      "children": [
+        {
+          "id": "skill-path",
+          "title": "skill が届くまで",
+          "lens": "architecture",
+          "summary": "4 種類の供給元が 1 つの attrset に集まり、2 つの配布先へ symlink される。文面の修正は patch で入る。",
+          "scope": {
+            "kind": "selection",
+            "lanes": [],
+            "nodes": [
+              "skill-repos",
+              "flake-inputs",
+              "local-skills",
+              "egress-patch",
+              "artifactshare-cli",
+              "artifactshare-skill",
+              "pr-lens-skill",
+              "managed-agent-skills",
+              "managed-skill-links",
+              "claude-skills",
+              "agents-skills"
+            ],
+            "edges": [
+              "repos-to-inputs",
+              "inputs-to-prlens",
+              "patch-to-prlens",
+              "ascli-to-asskill",
+              "asskill-to-mas",
+              "prlens-to-mas",
+              "local-to-mas",
+              "inputs-to-mas",
+              "mas-to-links",
+              "links-to-claude",
+              "links-to-agents",
+              "patch-to-asskill"
+            ],
+            "flows": []
+          },
+          "defaultOpen": false,
+          "children": []
+        },
+        {
+          "id": "pins",
+          "title": "固定した CLI と更新経路",
+          "lens": "architecture",
+          "summary": "3 つの CLI をバージョンと hash で固定し、更新はスクリプトから行う。",
+          "scope": {
+            "kind": "selection",
+            "lanes": [],
+            "nodes": [
+              "npm-registry",
+              "claude-releases",
+              "update-script",
+              "artifactshare-cli",
+              "claude-code",
+              "codex-cli",
+              "user-profile"
+            ],
+            "edges": [
+              "npm-to-ascli",
+              "npm-to-codex",
+              "releases-to-claude",
+              "ascli-to-profile",
+              "claude-to-profile",
+              "codex-to-profile",
+              "script-to-ascli",
+              "script-to-claude",
+              "script-to-codex"
+            ],
+            "flows": []
+          },
+          "defaultOpen": false,
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "switch-view",
+      "title": "データフロー — switch が走るとき",
+      "lens": "data-flow",
+      "scope": {
+        "kind": "selection",
+        "lanes": [],
+        "nodes": [],
+        "edges": [],
+        "flows": [
+          "switch"
+        ]
+      },
+      "defaultOpen": false,
+      "children": []
+    }
+  ],
+  "walkthrough": {
+    "steps": [
+      {
+        "id": "patch-injected",
+        "heading": "skill の文面を patch で差し替えた",
+        "body": "pr-lens は社外公開の手順を落とし、artifactshare は share URL の渡し方を直す。ビルド時に反映される。",
+        "stage": {
+          "kind": "view",
+          "view": "mechanism"
+        },
+        "focus": {
+          "kind": "selection",
+          "lanes": [],
+          "nodes": [
+            "egress-patch",
+            "pr-lens-skill",
+            "artifactshare-skill"
+          ],
+          "edges": [
+            "patch-to-prlens",
+            "patch-to-asskill"
+          ],
+          "messages": []
+        }
+      },
+      {
+        "id": "artifactshare-added",
+        "heading": "artifactshare の CLI と skill を追加した",
+        "body": "1 つの npm tarball から両方を作るので、skill の文面と実行される CLI の版がずれない。",
+        "stage": {
+          "kind": "view",
+          "view": "pins"
+        },
+        "focus": {
+          "kind": "selection",
+          "lanes": [],
+          "nodes": [
+            "npm-registry",
+            "artifactshare-cli"
+          ],
+          "edges": [
+            "npm-to-ascli"
+          ],
+          "messages": []
+        }
+      },
+      {
+        "id": "npx-removed",
+        "heading": "npm exec 起動を固定 CLI へ変えた",
+        "body": "配布 SKILL.md の 46 箇所が PATH 上の artifactshare を呼ぶ。毎回 npm から最新を取りに行かなくなった。",
+        "stage": {
+          "kind": "flow",
+          "flow": "switch"
+        },
+        "focus": {
+          "kind": "selection",
+          "lanes": [],
+          "nodes": [],
+          "edges": [],
+          "messages": [
+            "take-skill",
+            "rewrite"
+          ]
+        }
+      },
+      {
+        "id": "one-attrset",
+        "heading": "skill は 19 件すべて symlink で届く",
+        "body": "1 つの attrset から Claude Code と Codex の両方へ配る。管理外は orchestration の 1 件だけ。",
+        "stage": {
+          "kind": "view",
+          "view": "skill-path"
+        },
+        "focus": {
+          "kind": "selection",
+          "lanes": [],
+          "nodes": [
+            "managed-skill-links",
+            "claude-skills",
+            "agents-skills"
+          ],
+          "edges": [],
+          "messages": []
+        }
+      },
+      {
+        "id": "no-direct-route",
+        "heading": "upstream から $HOME への直行便はない",
+        "body": "外部から来るものは必ず評価層を通る。hash で固定してから配るので、同じ入力なら同じ結果になる。",
+        "stage": {
+          "kind": "view",
+          "view": "mechanism"
+        },
+        "focus": {
+          "kind": "all"
+        }
+      }
+    ]
+  },
+  "layout": {
+    "direction": "right",
+    "laneOrder": [
+      "upstream",
+      "repo",
+      "eval",
+      "home"
+    ]
+  }
+}
