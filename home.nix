@@ -162,14 +162,14 @@ let
       }
     ) managedAgentSkills;
 
-  claudeCodeVersion = "2.1.250";
+  claudeCodeVersion = "2.1.270";
   claudeCode = pkgs.stdenvNoCC.mkDerivation {
     pname = "claude-code";
     version = claudeCodeVersion;
 
     src = pkgs.fetchurl {
       url = "https://downloads.claude.ai/claude-code-releases/${claudeCodeVersion}/darwin-arm64/claude";
-      hash = "sha256-UG1zYqnGJTBgRIeanZHY8zvS7vljaBtWvjKV21/j40s=";
+      hash = "sha256-pQa22XCkz0T2q9tTqB3c1dOwzgQqlcUC/p0flGvbiAc=";
     };
 
     dontUnpack = true;
@@ -209,19 +209,19 @@ let
     };
   };
 
-  codexCliVersion = "0.153.4";
+  codexCliVersion = "0.154.0";
   codexCli = pkgs.stdenvNoCC.mkDerivation {
     pname = "openai-codex";
     version = codexCliVersion;
 
     src = pkgs.fetchurl {
       url = "https://registry.npmjs.org/@openai/codex/-/codex-${codexCliVersion}.tgz";
-      hash = "sha256-/QQmPBrfodKFxsCthql8q1CNMBLunquAqZ93PMSy+zo=";
+      hash = "sha256-hwZj1OZQQt01gwXpaiKvWHCKKDF81OdKhaqGfGn1hZs=";
     };
 
     codexDarwinArm64Src = pkgs.fetchurl {
       url = "https://registry.npmjs.org/@openai/codex/-/codex-${codexCliVersion}-darwin-arm64.tgz";
-      hash = "sha256-U10wG0kTGr/aMmT5WfsN76QLvDBpdtmN28FcQkY2xVw=";
+      hash = "sha256-KphmLXkxalmZPHIz4+JaGqHULaS0WQRYXTOlp9ocreE=";
     };
 
     dontConfigure = true;
