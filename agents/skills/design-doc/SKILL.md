@@ -120,6 +120,17 @@ Read `references/readability-checklist.md` and use it as the source of truth for
 - Prefer `X とする` / `Y は削除する` / `Z を追加する`.
 - Keep the document review-oriented, not transcript-oriented.
 
+### Conciseness
+
+Length is a cost the reviewer pays. These rules outrank any urge to be thorough.
+
+- Lead with the conclusion: the adopted design and why it was adopted, in three lines or fewer, before any section heading.
+- State a rejection reason in the minimum wording that makes it understandable. Do not narrate pros and cons.
+- Do not write general commentary about anything out of scope. Name what is not being done as a fact, and stop there.
+- Do not write what is self-evident or what the reader can get from another document. Link instead of restating.
+- Create a heading only for a unit that carries its own decision. Never repeat the same content under several headings.
+- When in doubt, cut. After writing, ask of each block: without this, can the reader still understand the decision? If yes, delete it.
+
 ## References
 
 - `references/output-targets.md`

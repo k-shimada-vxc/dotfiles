@@ -16,11 +16,11 @@ Use this as the default structure for design documents derived from a decision l
 10. `# 10. テスト観点`
 11. `# 11. 非スコープ・残論点`
 
-Add `# 0. この変更で何が変わるか` only when a short summary materially improves readability.
+Open the document with the conclusion - the adopted design and why - in three lines or fewer, as a lead paragraph above `# 1.` with no heading of its own. A `# 0.` summary section is redundant once that lead exists; add one only when the change is large enough that three lines cannot carry it.
 
-Add `# 0.1 このレビューで判断してほしいこと` whenever decisions still need someone else's call. Put it directly after `0.` so reviewers see it before the details.
+Add `# 0.1 このレビューで判断してほしいこと` whenever decisions still need someone else's call. Put it directly after the lead so reviewers see it before the details.
 
-For small tickets, merge nearby sections rather than keeping empty headings. For schema/API changes, keep this order so readers see the problem and terms before field-level details.
+This order is a menu, not a quota. Write a section only when it carries content that changes how the reader judges the design. Omit the rest outright - do not leave a stub heading - and renumber so the chapter numbers stay continuous. For schema/API changes, keep the surviving sections in this relative order so readers meet the problem and the terms before field-level details.
 
 ## Collapse Policy
 
@@ -32,10 +32,12 @@ How a collapsible block is written depends on the destination medium; see `outpu
 
 ## Prose vs Structure
 
-Prose is not a defect. The reasoning a document preserves is its lasting value; flattening all of it into bullets means re-litigating the same decisions later. Split by what the text *is*, not by how long it is.
+Default to structure. Prose survives only where it carries a constraint the reader cannot reconstruct from the design itself, and even then in the fewest sentences that make it understandable.
 
 - **Specification** — something an implementer turns into a checklist, or a reviewer marks pass/fail line by line → numbered list or table, conclusion first.
-- **Rationale** — why this option, what was rejected, what constraint forced it → prose, placed after the conclusion.
+- **Rationale** — why this option, what was rejected, what constraint forced it → a row in the `5. 代替案と採用理由` table. Keep it as prose only when a table row cannot express the constraint, and place it after the conclusion.
+
+Comparing options in prose is not thoroughness. A paragraph weighing merits and demerits belongs in the table as a one-line rejection reason.
 
 Signs a paragraph needs splitting:
 
@@ -60,11 +62,13 @@ When the document cites file paths, line numbers, function names, or dependency 
 
 ### 1. 背景と課題
 
-- Current model or workflow
+Write this section only when the reader cannot judge the design without it. Skip it when the background is self-evident or already written somewhere else; link to that page instead of restating it.
+
 - What problem exists now
 - Why the change is needed
 - What the first release is expected to achieve
 - If the first release only prepares a foundation, say that clearly
+- The current model or workflow, only to the extent the problem needs it
 
 ### 2. 対象範囲
 
@@ -73,6 +77,8 @@ When the document cites file paths, line numbers, function names, or dependency 
 - End with a one or two line summary of the main non-scope items, then point to `11. 非スコープ・残論点` for the full list
 
 ### 3. 用語定義
+
+Define only the terms this document coins or overloads. A term the team already uses, or one defined in a document you can link, does not belong here. If nothing is left, drop the section.
 
 - Define new tables, flags, APIs, states, and domain terms before using them heavily.
 - Include transitional states when they matter, such as orphaned or partially registered data.
@@ -86,8 +92,11 @@ When the document cites file paths, line numbers, function names, or dependency 
 
 ### 5. 代替案と採用理由
 
-- Summarize important alternatives and why they were rejected.
-- Include tradeoffs that reviewers are likely to ask about.
+A two-column table: `案` / `却下理由`. Nothing else.
+
+- One row per alternative that a reviewer would otherwise propose. Alternatives nobody would raise are noise.
+- One line per rejection reason, in the minimum wording that makes it understandable. No merit-and-demerit prose.
+- The adopted option is already stated in the lead; this table only says why the others are not it.
 - Keep rejected options out of the main decision path after this section.
 
 ### 6. 詳細設計
