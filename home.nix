@@ -128,6 +128,7 @@ let
     "artifactshare" = artifactshareSkill;
     "code-drift-check" = ./agents/skills/code-drift-check;
     "code-meaning-check" = ./agents/skills/code-meaning-check;
+    "design-doc" = ./agents/skills/design-doc;
     "explain-diff-html" = ./agents/skills/explain-diff-html;
     "explain-diff-notion" = ./agents/skills/explain-diff-notion;
     "gh-address-comments" = ./agents/skills/gh-address-comments;
@@ -135,7 +136,6 @@ let
     "gh-stack" = gh-stack + "/skills/gh-stack";
     "git-commit" = ./agents/skills/git-commit;
     "grilling" = ./agents/skills/grilling;
-    "notion-pb-to-design-doc" = ./agents/skills/notion-pb-to-design-doc;
     # skill 本体は markdown だけで、実処理は SKILL.md が呼ぶ pr-lens CLI 側にある。
     "pr-lens" = prLensSkill;
     # 配布元は plugin 形式だが、plugin.json ごと取り込むと管理単位が skill と plugin で二重になる。

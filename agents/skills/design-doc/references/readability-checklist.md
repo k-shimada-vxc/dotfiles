@@ -1,6 +1,6 @@
 # Readability Checklist
 
-Use this checklist before finalizing a PB-derived design document.
+Use this checklist before finalizing a design document derived from a decision log.
 
 ## Mainline
 
@@ -27,7 +27,7 @@ Use this checklist before finalizing a PB-derived design document.
 - Important schema/API changes include data model, API contract, validation, indexes, deletion/cascade, permissions, migration, release, rollback, and tests as applicable.
 - A summary of the main non-scope items appears near 対象範囲, not only in the last section.
 - Changes that add a query path, view, index-dependent list screen, or batch operation state expected scale, which indexes apply, and which access patterns have none.
-- Only 背景と課題 / 用語定義 / 代替案と採用理由 / appendices are collapsed. テスト観点 is expanded.
+- Only 背景と課題 / 用語定義 / 代替案と採用理由 / appendices are collapsed, using the destination medium's own syntax. テスト観点 is expanded.
 - Specifications appear as numbered lists, tables, or diagrams, conclusion first. Prose is reserved for rationale.
 - Sibling blocks of the same kind share a shape. One is not a numbered list while the next is a paragraph.
 
@@ -42,10 +42,10 @@ Use this checklist before finalizing a PB-derived design document.
 ## Rationale
 
 - Important rejected alternatives are summarized when they explain why the chosen design is reasonable.
-- Detailed reasons are moved into toggles.
-- Historical discussion is moved into toggles.
+- Detailed reasons are moved into collapsible blocks.
+- Historical discussion is moved into collapsible blocks.
 - Nice-to-have ideas are not mixed into current scope.
-- Contradictions between old notes and final decisions are resolved or isolated in a toggle.
+- Contradictions between old notes and final decisions are resolved or isolated in a collapsible block.
 
 ## Reviewability
 
@@ -53,4 +53,4 @@ Use this checklist before finalizing a PB-derived design document.
 - Impacted areas are listed.
 - Test viewpoints are concrete and observable.
 - Every test viewpoint traces back to a specification that is structured, not buried in a paragraph.
-- The destination page reads like a design doc, not like a transcript.
+- The destination document reads like a design doc, not like a transcript.

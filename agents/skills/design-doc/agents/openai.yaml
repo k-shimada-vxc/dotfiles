@@ -1,0 +1,11 @@
+interface:
+  display_name: "Design Doc"
+  short_description: "Turn a decision log into a readable design doc"
+  default_prompt: "Use $design-doc to turn this decision log into a readable design document in our ticket style."
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "notion"
+      description: "Notion MCP server (Notion を入出力に使う場合のみ必要)"
+      transport: "streamable_http"
+      url: "https://mcp.notion.com/mcp"

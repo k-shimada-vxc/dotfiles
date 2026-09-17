@@ -1,6 +1,6 @@
 # Section Template
 
-Use this as the default structure for PB-derived design tickets.
+Use this as the default structure for design documents derived from a decision log.
 
 ## Standard Order
 
@@ -16,17 +16,18 @@ Use this as the default structure for PB-derived design tickets.
 10. `# 10. テスト観点`
 11. `# 11. 非スコープ・残論点`
 
-Add `# 0. このPBで何が変わるか` only when a short summary materially improves readability.
+Add `# 0. この変更で何が変わるか` only when a short summary materially improves readability.
 
 Add `# 0.1 このレビューで判断してほしいこと` whenever decisions still need someone else's call. Put it directly after `0.` so reviewers see it before the details.
 
 For small tickets, merge nearby sections rather than keeping empty headings. For schema/API changes, keep this order so readers see the problem and terms before field-level details.
 
-## Toggle Policy
+## Collapse Policy
 
-Which sections may be collapsed is a separate decision from what goes inside a toggle (see SKILL.md §3).
+Which sections may be collapsed is a separate decision from what goes inside a collapsible block (see SKILL.md §4).
+How a collapsible block is written depends on the destination medium; see `output-targets.md`.
 
-- May be a toggle: `1. 背景と課題`, `3. 用語定義`, `5. 代替案と採用理由`, appendices.
+- May be collapsed: `1. 背景と課題`, `3. 用語定義`, `5. 代替案と採用理由`, appendices.
 - Keep expanded: everything else. `10. テスト観点` in particular, even though older tickets collapse it.
 
 ## Prose vs Structure
@@ -102,7 +103,7 @@ When the document cites file paths, line numbers, function names, or dependency 
   - state diagram for lifecycle or transitional states
   - graph for DAG/order dependencies
 - Apply the split described in `Prose vs Structure`
-- Put rationale in toggles
+- Put rationale in collapsible blocks
 - Close with a 性能・規模 subsection when the change adds a query path, a view, an index-dependent list screen, or a batch operation:
   - Expected row counts and how the number was derived
   - Which indexes the new query path uses, and which access patterns have none
@@ -161,7 +162,7 @@ Recommended columns:
 - timing
 - handling
 
-### Toggle labels
+### Collapsible block labels
 
 - `背景の詳細`
 - `判断理由`
@@ -169,7 +170,7 @@ Recommended columns:
 
 ### Revision history appendix
 
-Add a `付録. 改訂履歴` toggle once the document has been reviewed and revised at least once, so reviewers who read an earlier version can see what moved.
+Add a collapsed `付録. 改訂履歴` section once the document has been reviewed and revised at least once, so reviewers who read an earlier version can see what moved.
 
 Recommended columns:
 
@@ -178,7 +179,7 @@ Recommended columns:
 
 ### Mermaid diagram patterns
 
-Use Mermaid only when the diagram clarifies a relationship, dependency, or workflow better than prose or a table. Keep diagrams small enough to review in Notion.
+Use Mermaid only when the diagram clarifies a relationship, dependency, or workflow better than prose or a table. Keep diagrams small enough to review in the destination without scrolling.
 
 Good candidates:
 
