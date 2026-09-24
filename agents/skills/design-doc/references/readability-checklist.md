@@ -18,9 +18,11 @@ Use this checklist before finalizing a design document derived from a decision l
 - Non-scope is explicit, stated as fact, with no general commentary about what lies outside it.
 - Only terms this document coins or overloads are defined, and they are defined before they are used heavily.
 - Every heading carries its own decision. No section is a stub, and no content is repeated under a second heading.
-- Chapter numbers are continuous.
+- Chapter numbers are continuous, and no sub-number sits under a parent that does not exist.
 - Sections are grouped by topic, not by the order the discussion happened.
 - Design rules are not repeated across many sections; one section is the source of truth and others link back to it.
+- The duplication sweep was run, not assumed: take each decision and each physical name the document introduces, count where it is *explained* rather than merely mentioned or linked, and for anything explained in three or more places, keep one and replace the rest with a link. Cross-cutting items - an operational prerequisite, a blocked API, a rule that spans phases - are where this piles up.
+- Each revision-history row is one or two sentences. A longer row means the decision itself never made it into the mainline.
 - Examples exist when rules are numerical or easy to misread.
 - Tables are used where scanning is more important than prose.
 - Mermaid diagrams are used when ER, DAG, API flow, migration flow, cascade behavior, or state transitions would be clearer visually.
@@ -44,6 +46,8 @@ Use this checklist before finalizing a design document derived from a decision l
 
 - Alternatives a reviewer would otherwise propose appear as rows of the two-column `案` / `却下理由` table, one line each.
 - No paragraph weighs merits and demerits; that comparison lives in the table.
+- No rejection reason is stranded outside that table. A paragraph elsewhere that says "X も成立するが採らない" is moved into it as a row - 移行, リリース順 and 運用境界 are where these hide.
+- An undecided point is one line in the mainline - what is undecided, what the document assumes meanwhile - with the argument in a collapsible block below it.
 - Detailed reasons are moved into collapsible blocks.
 - Historical discussion is moved into collapsible blocks.
 - Nice-to-have ideas are not mixed into current scope.

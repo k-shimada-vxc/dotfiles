@@ -18,7 +18,7 @@ Use this as the default structure for design documents derived from a decision l
 
 Open the document with the conclusion - the adopted design and why - in three lines or fewer, as a lead paragraph above `# 1.` with no heading of its own. A `# 0.` summary section is redundant once that lead exists; add one only when the change is large enough that three lines cannot carry it.
 
-Add `# 0.1 このレビューで判断してほしいこと` whenever decisions still need someone else's call. Put it directly after the lead so reviewers see it before the details.
+Add `# 0. このレビューで判断してほしいこと` whenever decisions still need someone else's call. Put it directly after the lead so reviewers see it before the details. When a `# 0.` summary section does exist, this becomes `# 0.1` and follows it - never leave a `0.1` with no `0.` above it.
 
 This order is a menu, not a quota. Write a section only when it carries content that changes how the reader judges the design. Omit the rest outright - do not leave a stub heading - and renumber so the chapter numbers stay continuous. For schema/API changes, keep the surviving sections in this relative order so readers meet the problem and the terms before field-level details.
 
@@ -27,8 +27,9 @@ This order is a menu, not a quota. Write a section only when it carries content 
 Which sections may be collapsed is a separate decision from what goes inside a collapsible block (see SKILL.md §4).
 How a collapsible block is written depends on the destination medium; see `output-targets.md`.
 
-- May be collapsed: `1. 背景と課題`, `3. 用語定義`, `5. 代替案と採用理由`, appendices.
+- May be collapsed: `1. 背景と課題`, `3. 用語定義`, `5. 代替案と採用理由`, the discussion notes for an undecided point inside `11. 非スコープ・残論点`, appendices.
 - Keep expanded: everything else. `10. テスト観点` in particular, even though older tickets collapse it.
+- An undecided point is named in the mainline of `11.` in one line - what is undecided, and what the document assumes until it is settled. The argument for and against goes in a collapsible block under that line, and may run as long as it needs to.
 
 ## Prose vs Structure
 
@@ -54,7 +55,7 @@ When the document cites file paths, line numbers, function names, or dependency 
 
 ## Recommended Content
 
-### 0.1 このレビューで判断してほしいこと
+### 0. このレビューで判断してほしいこと
 
 - List only the items that cannot be settled by the document alone.
 - State explicitly that everything else is already decided.
@@ -185,6 +186,8 @@ Recommended columns:
 
 - date
 - what changed, in one or two sentences
+
+One or two sentences is the limit, not an average. A row that grows past it is explaining a decision, and the decision belongs in the mainline.
 
 ### Mermaid diagram patterns
 
