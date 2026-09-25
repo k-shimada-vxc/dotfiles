@@ -1,6 +1,7 @@
 {
   lib,
   pkgs,
+  pkgs-unstable,
   username,
   homeDirectory,
   inspired-mino-design-skills,
@@ -346,6 +347,8 @@ in
     pkgs.eza
     pkgs.fzf
     pkgs.nixfmt
+    # nixos-25.11 の opencode は upstream から大きく遅れているため、unstable から取る。
+    pkgs-unstable.opencode
     pkgs.python3
     pkgs.ripgrep
     pkgs.starship

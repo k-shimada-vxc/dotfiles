@@ -38,7 +38,6 @@
     enable = true;
 
     taps = [
-      "anomalyco/tap"
       "ariga/tap"
       "hashicorp/tap"
       "homebrew/bundle"
@@ -86,7 +85,6 @@
 
     # nix-darwin 25.11 が未対応の trusted オプションは、formula単位でBrewfileへ補う。
     extraConfig = ''
-      brew "anomalyco/tap/opencode", trusted: true
       brew "ariga/tap/atlas", trusted: true
       brew "hashicorp/tap/terraform", trusted: true
     '';

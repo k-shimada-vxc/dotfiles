@@ -3,6 +3,8 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
+    # 更新の速い CLI だけを追従させるため、安定版とは別に unstable を持つ。
+    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     home-manager = {
       url = "github:nix-community/home-manager/release-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -31,6 +33,7 @@
 
   outputs =
     {
+      nixpkgs-unstable,
       nix-darwin,
       home-manager,
       inspired-mino-design-skills,
@@ -42,6 +45,7 @@
     let
       username = "k-shimada";
       homeDirectory = "/Users/${username}";
+      pkgs-unstable = nixpkgs-unstable.legacyPackages.aarch64-darwin;
     in
     {
       darwinConfigurations."VX-NT-0969" = nix-darwin.lib.darwinSystem {
@@ -59,6 +63,7 @@
                 inherit
                   username
                   homeDirectory
+                  pkgs-unstable
                   inspired-mino-design-skills
                   gh-stack
                   pr-lens
