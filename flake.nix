@@ -45,7 +45,14 @@
     let
       username = "k-shimada";
       homeDirectory = "/Users/${username}";
-      pkgs-unstable = nixpkgs-unstable.legacyPackages.aarch64-darwin;
+      pkgs-unstable = import nixpkgs-unstable {
+        system = "aarch64-darwin";
+        config.allowUnfreePredicate =
+          pkg:
+          builtins.elem (nixpkgs-unstable.lib.getName pkg) [
+            "claude-code"
+          ];
+      };
     in
     {
       darwinConfigurations."VX-NT-0969" = nix-darwin.lib.darwinSystem {

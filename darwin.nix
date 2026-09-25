@@ -1,5 +1,4 @@
 {
-  lib,
   username,
   homeDirectory,
   ...
@@ -9,14 +8,7 @@
   # Determinate Nix のデーモンと設定を維持し、nix-darwin との管理競合を避ける。
   nix.enable = false;
 
-  nixpkgs = {
-    hostPlatform = "aarch64-darwin";
-    config.allowUnfreePredicate =
-      pkg:
-      builtins.elem (lib.getName pkg) [
-        "claude-code"
-      ];
-  };
+  nixpkgs.hostPlatform = "aarch64-darwin";
 
   system = {
     primaryUser = username;

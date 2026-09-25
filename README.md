@@ -35,19 +35,14 @@ aws --version
 sam --version
 ```
 
-## pin している CLI を更新する
+## unstable 由来の CLI を更新する
 
-`home.nix` で pin している Claude Code、Codex CLI、Artifact Share CLI のバージョン・hash を更新する。
+Claude Code、Codex CLI、opencode は `nixpkgs-unstable` から取っている。lock を進めて適用する。
 
 ```sh
-./scripts/update-pinned-cli.sh                   # すべて更新して nix build まで検証
-./scripts/update-pinned-cli.sh claude-code       # Claude Code のみ
-./scripts/update-pinned-cli.sh artifactshare     # Artifact Share CLI のみ
-./scripts/update-pinned-cli.sh --channel latest  # Claude Code を latest チャネルで追う
-./scripts/update-pinned-cli.sh --no-build        # 書き換えのみ
+nix flake update nixpkgs-unstable
+sudo darwin-rebuild switch --flake ~/dotfiles#VX-NT-0969
 ```
-
-適用（`darwin-rebuild switch`）とコミットは手動で行う。
 
 ## 運用方針
 
