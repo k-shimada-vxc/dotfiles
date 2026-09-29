@@ -37,34 +37,9 @@
       "stablyai/orca"
     ];
 
-    brews = [
-      "aws-sam-cli"
-      "awscli"
-      "cfn-lint"
-      "curl"
-      "deno"
-      "docutils"
-      "duckdb"
-      "gh"
-      "go"
-      "golangci-lint"
-      "graphviz"
-      "groff"
-      "jq"
-      "mosh"
-      "pgcli"
-      "pipx"
-      {
-        name = "postgresql@16";
-        link = true;
-      }
-      "rust"
-      "shellcheck"
-      "tmux"
-      "tree"
-      "uv"
-      "yq"
-    ];
+    # nixpkgs の aws-sam-cli は darwin でテストが落ちてバイナリキャッシュに無く、
+    # 手元ビルドもテスト無効化の override が必要になるため Homebrew に残す。
+    brews = [ "aws-sam-cli" ];
 
     casks = [
       "raycast"
@@ -75,6 +50,8 @@
       "warp"
     ];
 
+    # nixpkgs の atlas はソースからビルドした Community 版で、公式バイナリにある機能が欠けるため tap から入れる。
+    # nixpkgs の terraform は unfree でバイナリキャッシュに無く、更新のたびに手元ビルドになるため tap から入れる。
     # nix-darwin 25.11 が未対応の trusted オプションは、formula単位でBrewfileへ補う。
     extraConfig = ''
       brew "ariga/tap/atlas", trusted: true

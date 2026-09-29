@@ -37,7 +37,7 @@ sam --version
 
 ## unstable 由来の CLI を更新する
 
-Claude Code、Codex CLI、opencode は `nixpkgs-unstable` から取っている。lock を進めて適用する。
+コーディングエージェントと Homebrew から移した CLI は `nixpkgs-unstable` から取っている。lock を進めて適用する。
 
 ```sh
 nix flake update nixpkgs-unstable
@@ -50,5 +50,6 @@ sudo darwin-rebuild switch --flake ~/dotfiles#VX-NT-0969
 - `pnpm` と `yarn` は Corepack 経由で利用する。
 - Node 製 CLI の追加は、まず Nix パッケージで供給できるかを確認する。
 - Volta の `install` / `pin` は使わない。
-- AWS CLI と SAM CLI は nix-darwin の Homebrew モジュールで管理する。
+- CLI は Nix で管理する。Homebrew は nixpkgs 版に問題があるもの（atlas・aws-sam-cli・terraform）と、自己更新する GUI アプリに限る。
+- Rust の toolchain は rustup で管理する。
 - Homebrew パッケージの自動更新と未宣言パッケージの削除は行わない。

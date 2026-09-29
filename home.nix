@@ -258,6 +258,34 @@ in
     pkgs-unstable.claude-code
     pkgs-unstable.opencode
   ]
+  # Homebrew から移した CLI。nixos-25.11 では移行前の brew 版より古くなるものがあるため、
+  # 個別に系統を選び分けず unstable に揃える。
+  ++ (with pkgs-unstable; [
+    awscli2
+    curl
+    deno
+    docutils
+    duckdb
+    gh
+    # 既定の go は 1.26 で、移行前の brew 版 1.27 より古いため minor を明示する。
+    go_1_27
+    golangci-lint
+    graphviz
+    groff
+    jq
+    mosh
+    pgcli
+    pipx
+    postgresql_16
+    python3Packages.cfn-lint
+    # brew の rust は toolchain を1版に固定するため、プロジェクトごとに toolchain を切り替えられる rustup にする。
+    rustup
+    shellcheck
+    tmux
+    tree
+    uv
+    yq-go
+  ])
   ++ lib.optional (builtins.hasAttr "corepack" pkgs) pkgs.corepack
   # Nix で供給できる CLI だけを宣言し、未収録のものは次段で個別に判断する。
   ++ lib.optional (builtins.hasAttr "openapi-generator-cli" pkgs) pkgs."openapi-generator-cli";
