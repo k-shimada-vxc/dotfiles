@@ -99,7 +99,6 @@ fi
 
 ### go ###
 export PATH="$HOME/.local/bin:$HOME/go/bin:$PATH"
-# export GOROOT="$(brew --prefix golang)/libexec"
 
 source /Users/k-shimada/.docker/init-zsh.sh || true # Added by Docker Desktop
 
