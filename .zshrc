@@ -56,7 +56,10 @@ alias grep="rg"
 alias exa='eza'
 alias e='eza --icons --git'
 alias l=e
-alias ls=e
+# eza v0.23 以降は引数なしかつ stdin が非TTYだと stdin からパスを読み、閉じない stdin でブロックし、/dev/null では空出力になる。
+# </dev/null を付けても空出力になり、`eza .` を既定にすると `ls foo` で . まで一覧されるため、非TTYでは本物の ls に任せる
+# （upstream: eza-community/eza#1568, #1725）
+ls() { if [[ -t 0 ]]; then eza --icons --git "$@"; else command ls "$@"; fi }
 alias ea='eza -a --icons --git'
 alias la=ea
 alias ee='eza -aahl --icons --git'
@@ -77,9 +80,11 @@ alias ej='escape_json'
 
 # cdでディレクトリ移動したとき自動でlsする
 chpwd() {
-  if [[ $(pwd) != $HOME ]] ;
-  then;
-  ls
+  # 非対話シェル（Claude Code 等）では抜ける。eza は stdin が非TTYだと stdin からパスを読むため、
+  # パイプやヒアドキュメントを伴う呼び出し中の cd でブロックしたり入力を横取りしたりする
+  [[ -o interactive ]] || return
+  if [[ $PWD != $HOME ]]; then
+    ls
   fi
 }
 
