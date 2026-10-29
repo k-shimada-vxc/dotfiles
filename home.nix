@@ -11,7 +11,7 @@
 }:
 
 let
-  nodejsPackage = if builtins.hasAttr "nodejs_22" pkgs then pkgs.nodejs_22 else pkgs.nodejs;
+  nodejsPackage = pkgs.nodejs_22;
 
   inspiredMinoSkillsRoot = inspired-mino-design-skills + "/.agents/skills";
 
@@ -189,14 +189,6 @@ in
         "${pkgs.zsh-fast-syntax-highlighting}/share/zsh/plugins/fast-syntax-highlighting";
     };
 
-  # Corepack の shim をユーザー管理ディレクトリへ置き、pnpm / yarn を即利用できるようにする。
-  home.activation.enableCorepack = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-    if command -v corepack >/dev/null 2>&1; then
-      mkdir -p "$HOME/.local/bin"
-      corepack enable --install-directory "$HOME/.local/bin"
-    fi
-  '';
-
   # 既存の standalone installer 由来 symlink だけを Nix 管理の Claude Code へ移行する。
   home.activation.linkClaudeCode = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     claude_target="$HOME/.local/bin/claude"
@@ -239,7 +231,7 @@ in
     fi
   '';
 
-  # Node.js の実行基盤だけを固定し、パッケージマネージャーは Corepack に委ねる。
+  # Node.js の実行基盤だけを固定し、pnpm / yarn は pkgs.corepack の shim から Corepack に委ねる。
   # bun はランタイム兼パッケージマネージャーで Corepack の管理対象外なので、単独パッケージとして固定する。
   home.packages = [
     artifactshareCli
@@ -247,9 +239,11 @@ in
     nodejsPackage
     pkgs.bat
     pkgs.bun
+    pkgs.corepack
     pkgs.eza
     pkgs.fzf
     pkgs.nixfmt
+    pkgs.openapi-generator-cli
     pkgs.python3
     pkgs.ripgrep
     pkgs.starship
@@ -284,8 +278,5 @@ in
     tree
     uv
     yq-go
-  ])
-  ++ lib.optional (builtins.hasAttr "corepack" pkgs) pkgs.corepack
-  # Nix で供給できる CLI だけを宣言し、未収録のものは次段で個別に判断する。
-  ++ lib.optional (builtins.hasAttr "openapi-generator-cli" pkgs) pkgs."openapi-generator-cli";
+  ]);
 }
