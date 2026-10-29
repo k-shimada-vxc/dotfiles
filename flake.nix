@@ -3,7 +3,7 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
-    # 更新の速い CLI だけを追従させるため、安定版とは別に unstable を持つ。
+    # コーディングエージェントと Homebrew から移した CLI は stable では版が遅れるため、別に unstable を持つ。
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     home-manager = {
       url = "github:nix-community/home-manager/release-25.11";

@@ -41,7 +41,7 @@ let
     "explain-diff-html" = ./agents/skills/explain-diff-html;
     "explain-diff-notion" = ./agents/skills/explain-diff-notion;
     "gh-address-comments" = ./agents/skills/gh-address-comments;
-    # `gh skill install` は gh 2.74 に未実装なので、配布元の skill ディレクトリを直接 Nix 管理する。
+    # `gh skill install` は preview で、入れた skill が Nix の管理外になるため、配布元の skill ディレクトリを直接 Nix 管理する。
     "gh-stack" = gh-stack + "/skills/gh-stack";
     "git-commit" = ./agents/skills/git-commit;
     # 配布元は plugin 形式だが、plugin.json ごと取り込むと管理単位が skill と plugin で二重になる。
@@ -83,6 +83,8 @@ in
 
   # ~/.claude.json の installMethod が native のため、native インストールの配置先である
   # ~/.local/bin/claude を Nix 管理の版へ向ける。管理外のものは上書きせずに止める。
+  # 同じく ~/.claude.json の autoUpdates: false が前提で、自動更新が有効になると
+  # ~/.local/share/claude/versions/ を指す symlink に張り替えられ、ここで止まる。
   home.activation.linkClaudeCode = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     claude_target="$HOME/.local/bin/claude"
     claude_managed="${pkgs-unstable.claude-code}/bin/claude"
