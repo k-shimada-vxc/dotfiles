@@ -13,78 +13,7 @@
 let
   nodejsPackage = pkgs.nodejs_22;
 
-  inspiredMinoSkillsRoot = inspired-mino-design-skills + "/.agents/skills";
-
-  artifactshareCliVersion = "0.13.3";
-  # zod だけは bundle 済みで、gunshi は静的 import、undici は動的 import として
-  # 外部 module のまま残る。依存 tarball を並べて node_modules を組み、
-  # npm の実行時解決に頼らない形に固定する。
-  artifactshareGunshiVersion = "0.37.2";
-  artifactshareUndiciVersion = "8.10.2";
-  artifactshareCli = pkgs.stdenvNoCC.mkDerivation {
-    pname = "artifactshare-cli";
-    version = artifactshareCliVersion;
-
-    src = pkgs.fetchurl {
-      url = "https://registry.npmjs.org/@artifactshare/cli/-/cli-${artifactshareCliVersion}.tgz";
-      hash = "sha256-di0d2N/dh8vs9rWUB2JMsIMnJxSZ7SkMC4IAY3zHoz4=";
-    };
-
-    gunshiSrc = pkgs.fetchurl {
-      url = "https://registry.npmjs.org/gunshi/-/gunshi-${artifactshareGunshiVersion}.tgz";
-      hash = "sha256-kfVfEYQTildBa6Hg2gW6k+aAqcKH8dPuv0oACGE/Dgg=";
-    };
-
-    undiciSrc = pkgs.fetchurl {
-      url = "https://registry.npmjs.org/undici/-/undici-${artifactshareUndiciVersion}.tgz";
-      hash = "sha256-dAY4rjLXjSZGpnJ5UONl+ia2+oeRP6CW5g7Ur+tGNKo=";
-    };
-
-    dontConfigure = true;
-    dontBuild = true;
-
-    unpackPhase = ''
-      runHook preUnpack
-
-      mkdir -p source gunshi undici
-      tar -xzf "$src" -C source
-      tar -xzf "$gunshiSrc" -C gunshi
-      tar -xzf "$undiciSrc" -C undici
-
-      runHook postUnpack
-    '';
-
-    installPhase = ''
-      runHook preInstall
-
-      install -d "$out/lib/node_modules/@artifactshare"
-      cp -R source/package "$out/lib/node_modules/@artifactshare/cli"
-      cp -R gunshi/package "$out/lib/node_modules/gunshi"
-      cp -R undici/package "$out/lib/node_modules/undici"
-
-      # 実行時の Node.js を Nix 管理のものへ固定する。
-      substituteInPlace "$out/lib/node_modules/@artifactshare/cli/dist/index.js" \
-        --replace-fail "#!/usr/bin/env node" "#!${nodejsPackage}/bin/node"
-
-      # help と JSON の next_steps が案内する `npm exec --yes` 経由の起動は、
-      # 呼ぶたび最新版を取得して Nix で固定した版から外れる。案内文も PATH 上の
-      # 固定版に揃え、agent がどこを読んでも同じ CLI に到達するようにする。
-      substituteInPlace "$out/lib/node_modules/@artifactshare/cli/dist/index.js" \
-        --replace-fail "npm exec --yes --package=@artifactshare/cli -- artifactshare" "artifactshare"
-      chmod +x "$out/lib/node_modules/@artifactshare/cli/dist/index.js"
-
-      install -d "$out/bin"
-      ln -s "$out/lib/node_modules/@artifactshare/cli/dist/index.js" "$out/bin/artifactshare"
-
-      runHook postInstall
-    '';
-
-    meta = {
-      description = "Artifact Share CLI installed from npm";
-      homepage = "https://artifactshare.com/connect";
-      mainProgram = "artifactshare";
-    };
-  };
+  artifactshareCli = pkgs.callPackage ./packages/artifactshare.nix { nodejs = nodejsPackage; };
 
   # 配布 SKILL.md は CLI を `npm exec --yes` で都度取得する前提で書かれており、
   # そのままでは Nix で固定した版と実行される版が食い違う。PATH 上の固定版を
@@ -129,7 +58,7 @@ let
     "mino-interface-implementation-separation"
     "mino-problem-framing"
     "mino-reproducible-development"
-  ] (name: inspiredMinoSkillsRoot + "/${name}");
+  ] (name: inspired-mino-design-skills + "/.agents/skills/${name}");
 
   managedSkillLinks =
     root:
@@ -137,18 +66,7 @@ let
       name: source: lib.nameValuePair "${root}/${name}" { inherit source; }
     ) managedAgentSkills;
 
-  # config.toml は Codex 自身が更新する可変設定なので、wrapper で更新確認だけを無効化する。
-  # overrideAttrs で元の derivation に手を入れるとバイナリキャッシュに当たらず
-  # Rust のフルビルドになるため、ビルド済みの成果物を包むだけにする。
-  codexCli = pkgs.symlinkJoin {
-    name = "codex-${pkgs-unstable.codex.version}";
-    paths = [ pkgs-unstable.codex ];
-    nativeBuildInputs = [ pkgs.makeBinaryWrapper ];
-    postBuild = ''
-      wrapProgram "$out/bin/codex" \
-        --add-flags "-c check_for_update_on_startup=false"
-    '';
-  };
+  codexCli = pkgs.callPackage ./packages/codex.nix { inherit (pkgs-unstable) codex; };
 in
 {
   home.username = username;
