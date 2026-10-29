@@ -4,7 +4,6 @@
   pkgs-unstable,
   username,
   homeDirectory,
-  inspired-mino-design-skills,
   gh-stack,
   humanlayer-skills,
   ...
@@ -48,16 +47,7 @@ let
     # 配布元は plugin 形式だが、plugin.json ごと取り込むと管理単位が skill と plugin で二重になる。
     # skill ディレクトリだけを指して、他の skill と同じ扱いに揃える。
     "show-me" = humanlayer-skills + "/plugins/show-me/skills/show-me";
-  }
-  // lib.genAttrs [
-    "mino-architecture-quality-strategy"
-    "mino-core"
-    "mino-design-by-contract"
-    "mino-domain-model-completeness"
-    "mino-interface-implementation-separation"
-    "mino-problem-framing"
-    "mino-reproducible-development"
-  ] (name: inspired-mino-design-skills + "/.agents/skills/${name}");
+  };
 
   managedSkillLinks =
     root:

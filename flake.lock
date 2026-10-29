@@ -53,22 +53,6 @@
         "type": "github"
       }
     },
-    "inspired-mino-design-skills": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1784082096,
-        "narHash": "sha256-0NlHVrk8kjy3h/Neam+G30KLv9h4Q/oZKVcdV+5NKG0=",
-        "owner": "my-take-dev",
-        "repo": "inspired-mino-design-skills",
-        "rev": "afffb23aeeb9aa206a508db6df857bd04d60cd7c",
-        "type": "github"
-      },
-      "original": {
-        "owner": "my-take-dev",
-        "repo": "inspired-mino-design-skills",
-        "type": "github"
-      }
-    },
     "nix-darwin": {
       "inputs": {
         "nixpkgs": [
@@ -127,7 +111,6 @@
         "gh-stack": "gh-stack",
         "home-manager": "home-manager",
         "humanlayer-skills": "humanlayer-skills",
-        "inspired-mino-design-skills": "inspired-mino-design-skills",
         "nix-darwin": "nix-darwin",
         "nixpkgs": "nixpkgs",
         "nixpkgs-unstable": "nixpkgs-unstable"

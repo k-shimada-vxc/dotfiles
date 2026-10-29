@@ -13,10 +13,6 @@
       url = "github:nix-darwin/nix-darwin/nix-darwin-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    inspired-mino-design-skills = {
-      url = "github:my-take-dev/inspired-mino-design-skills";
-      flake = false;
-    };
     gh-stack = {
       url = "github:github/gh-stack";
       flake = false;
@@ -32,7 +28,6 @@
       nixpkgs-unstable,
       nix-darwin,
       home-manager,
-      inspired-mino-design-skills,
       gh-stack,
       humanlayer-skills,
       ...
@@ -66,7 +61,6 @@
                   username
                   homeDirectory
                   pkgs-unstable
-                  inspired-mino-design-skills
                   gh-stack
                   humanlayer-skills
                   ;
