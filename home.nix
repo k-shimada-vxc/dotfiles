@@ -45,7 +45,6 @@ let
     # `gh skill install` は gh 2.74 に未実装なので、配布元の skill ディレクトリを直接 Nix 管理する。
     "gh-stack" = gh-stack + "/skills/gh-stack";
     "git-commit" = ./agents/skills/git-commit;
-    "grilling" = ./agents/skills/grilling;
     # 配布元は plugin 形式だが、plugin.json ごと取り込むと管理単位が skill と plugin で二重になる。
     # skill ディレクトリだけを指して、他の skill と同じ扱いに揃える。
     "show-me" = humanlayer-skills + "/plugins/show-me/skills/show-me";
