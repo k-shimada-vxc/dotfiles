@@ -134,11 +134,7 @@ let
   managedSkillLinks =
     root:
     lib.mapAttrs' (
-      name: source:
-      lib.nameValuePair "${root}/${name}" {
-        inherit source;
-        force = true;
-      }
+      name: source: lib.nameValuePair "${root}/${name}" { inherit source; }
     ) managedAgentSkills;
 
   # config.toml は Codex 自身が更新する可変設定なので、wrapper で更新確認だけを無効化する。
@@ -167,20 +163,11 @@ in
     // (managedSkillLinks ".claude/skills")
     // {
       # エージェント横断の指示は dotfiles 側を正本にし、各ツールの標準パスへ配る。
-      ".codex/AGENTS.md" = {
-        source = ./agents/instructions/common.md;
-        force = true;
-      };
+      ".codex/AGENTS.md".source = ./agents/instructions/common.md;
       ".claude/CLAUDE.md".source = ./agents/instructions/common.md;
-      ".claude/statusline-command.sh" = {
-        source = ./agents/claude/statusline-command.sh;
-        force = true;
-      };
+      ".claude/statusline-command.sh".source = ./agents/claude/statusline-command.sh;
 
-      ".codex/skills/gh-address-comments" = {
-        source = managedAgentSkills."gh-address-comments";
-        force = true;
-      };
+      ".codex/skills/gh-address-comments".source = managedAgentSkills."gh-address-comments";
 
       # zsh プラグインは profile 直下ではなく固定のユーザー管理パスへ配置する。
       ".local/share/zsh/plugins/zsh-autosuggestions".source =
@@ -189,7 +176,8 @@ in
         "${pkgs.zsh-fast-syntax-highlighting}/share/zsh/plugins/fast-syntax-highlighting";
     };
 
-  # 既存の standalone installer 由来 symlink だけを Nix 管理の Claude Code へ移行する。
+  # ~/.claude.json の installMethod が native のため、native インストールの配置先である
+  # ~/.local/bin/claude を Nix 管理の版へ向ける。管理外のものは上書きせずに止める。
   home.activation.linkClaudeCode = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     claude_target="$HOME/.local/bin/claude"
     claude_managed="${pkgs-unstable.claude-code}/bin/claude"
@@ -198,7 +186,7 @@ in
     if [ -L "$claude_target" ]; then
       claude_current="$(readlink "$claude_target")"
       case "$claude_current" in
-        "$HOME/.local/share/claude/versions/"*|/nix/store/*-claude-code-*/bin/claude)
+        /nix/store/*-claude-code-*/bin/claude)
           ln -sfn "$claude_managed" "$claude_target"
           ;;
         *)
