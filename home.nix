@@ -167,8 +167,6 @@ in
       ".claude/CLAUDE.md".source = ./agents/instructions/common.md;
       ".claude/statusline-command.sh".source = ./agents/claude/statusline-command.sh;
 
-      ".codex/skills/gh-address-comments".source = managedAgentSkills."gh-address-comments";
-
       # zsh プラグインは profile 直下ではなく固定のユーザー管理パスへ配置する。
       ".local/share/zsh/plugins/zsh-autosuggestions".source =
         "${pkgs.zsh-autosuggestions}/share/zsh-autosuggestions";
