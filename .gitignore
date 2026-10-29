@@ -3,6 +3,3 @@
 # darwin-rebuild build が生成する symlink
 result
 result-*
-
-# PR Lens writes its previews here. They are rebuilt on demand.
-.pr-lens/

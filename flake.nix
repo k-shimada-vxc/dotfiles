@@ -21,10 +21,6 @@
       url = "github:github/gh-stack";
       flake = false;
     };
-    pr-lens = {
-      url = "github:coldteadotai/pr-lens";
-      flake = false;
-    };
     humanlayer-skills = {
       url = "github:humanlayer/skills";
       flake = false;
@@ -38,7 +34,6 @@
       home-manager,
       inspired-mino-design-skills,
       gh-stack,
-      pr-lens,
       humanlayer-skills,
       ...
     }:
@@ -73,7 +68,6 @@
                   pkgs-unstable
                   inspired-mino-design-skills
                   gh-stack
-                  pr-lens
                   humanlayer-skills
                   ;
               };
