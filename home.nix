@@ -194,6 +194,10 @@ in
         force = true;
       };
       ".claude/CLAUDE.md".source = ./agents/instructions/common.md;
+      ".claude/statusline-command.sh" = {
+        source = ./agents/claude/statusline-command.sh;
+        force = true;
+      };
 
       ".codex/skills/gh-address-comments" = {
         source = managedAgentSkills."gh-address-comments";
@@ -237,6 +241,23 @@ in
       exit 1
     else
       ln -s "$claude_managed" "$claude_target"
+    fi
+  '';
+
+  # settings.json は Orca の hooks や /model などツール側も書き込むため、home.file で
+  # 読み取り専用の symlink にはせず、dotfiles で決めたキーだけを既存の内容へ上書きマージする。
+  # dotfiles から消したキーは前回の管理対象を記録しないと判別できないので、手で消す運用にする。
+  home.activation.mergeClaudeSettings = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    claude_settings="$HOME/.claude/settings.json"
+    claude_managed_settings="${./agents/claude/settings.json}"
+
+    mkdir -p "$HOME/.claude"
+    if [ -e "$claude_settings" ]; then
+      ${pkgs.jq}/bin/jq -s '.[0] * .[1]' "$claude_settings" "$claude_managed_settings" > "$claude_settings.tmp"
+      mv "$claude_settings.tmp" "$claude_settings"
+    else
+      cp "$claude_managed_settings" "$claude_settings"
+      chmod u+w "$claude_settings"
     fi
   '';
 
