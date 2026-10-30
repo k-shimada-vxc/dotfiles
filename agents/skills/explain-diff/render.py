@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
 render.py — render a structured explain-diff spec into the self-contained HTML
-page format used by the `explain-diff-html` skill (see the adjacent
-SKILL.md, recipe from
+page format used by the `explain-diff` skill's HTML output (see
+references/html.md next to this script, recipe from
 https://gist.github.com/geoffreylitt/a29df1b5f9865506e8952488eac3d524).
 
 Why this exists: the CSS, quiz JavaScript, and page scaffolding are identical
@@ -14,8 +14,8 @@ takes a small JSON spec with just the content and renders the final page.
 Usage:
     python3 <skill-directory>/render.py spec.json [-o output.html]
 
-If -o is omitted, writes to <dir-of-spec>/YYYY-MM-DD-<slug>.html (matching the
-skill's filename convention), where <slug> comes from the spec's "slug" field.
+If -o is omitted, writes to /tmp/YYYY-MM-DD-explanation-<slug>.html, where <slug>
+comes from the spec's "slug" field (or is derived from the title).
 
 Spec format (JSON):
 {
@@ -46,7 +46,7 @@ The "html" fields are raw HTML — write real markup (headings, <pre> blocks,
 tables, ".diagram"/".callout" divs per the skill's CSS classes below), not
 markdown. This keeps the script a pure template renderer; all the writing
 judgment (what to explain, which diagrams to draw) still belongs to the LLM
-following the explain-diff-html recipe, same as before — this just removes
+following the explain-diff recipe, same as before — this just removes
 the repetitive part.
 """
 import argparse

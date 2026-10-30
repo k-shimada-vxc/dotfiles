@@ -38,8 +38,7 @@ let
     "code-drift-check" = ./agents/skills/code-drift-check;
     "code-meaning-check" = ./agents/skills/code-meaning-check;
     "design-doc" = ./agents/skills/design-doc;
-    "explain-diff-html" = ./agents/skills/explain-diff-html;
-    "explain-diff-notion" = ./agents/skills/explain-diff-notion;
+    "explain-diff" = ./agents/skills/explain-diff;
     "gh-address-comments" = ./agents/skills/gh-address-comments;
     # `gh skill install` は preview で、入れた skill が Nix の管理外になるため、配布元の skill ディレクトリを直接 Nix 管理する。
     "gh-stack" = gh-stack + "/skills/gh-stack";
