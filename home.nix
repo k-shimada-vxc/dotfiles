@@ -10,7 +10,7 @@
 }:
 
 let
-  nodejsPackage = pkgs.nodejs_22;
+  nodejsPackage = pkgs.nodejs_24;
 
   artifactshareCli = pkgs.callPackage ./packages/artifactshare.nix { nodejs = nodejsPackage; };
 
@@ -125,7 +125,7 @@ in
     fi
   '';
 
-  # Node.js の実行基盤だけを固定し、pnpm / yarn は pkgs.corepack の shim から Corepack に委ねる。
+  # Node.js の実行基盤だけを固定し、pnpm / yarn は pkgs.corepack_24 の shim から Corepack に委ねる。
   # bun はランタイム兼パッケージマネージャーで Corepack の管理対象外なので、単独パッケージとして固定する。
   home.packages = [
     artifactshareCli
@@ -133,7 +133,7 @@ in
     nodejsPackage
     pkgs.bat
     pkgs.bun
-    pkgs.corepack
+    pkgs.corepack_24
     pkgs.eza
     pkgs.fzf
     pkgs.nixfmt
