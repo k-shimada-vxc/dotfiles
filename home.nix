@@ -14,17 +14,10 @@ let
 
   artifactshareCli = pkgs.callPackage ./packages/artifactshare.nix { nodejs = nodejsPackage; };
 
-  # 配布 SKILL.md は CLI を `npm exec --yes` で都度取得する前提で書かれており、
-  # そのままでは Nix で固定した版と実行される版が食い違う。PATH 上の固定版を
-  # 直接呼ぶ形へ書き換えて、skill と CLI のバージョンを一致させる。
-  # Cursor 用の .mdc は同じ内容の別形式なので、SKILL.md だけを skill として配る。
-  artifactshareSkill = pkgs.runCommandLocal "artifactshare-skill" { } ''
-    mkdir -p "$out"
-    cp ${artifactshareCli}/lib/node_modules/@artifactshare/cli/skills/artifactshare/SKILL.md "$out"/
-    chmod +w "$out/SKILL.md"
-    substituteInPlace "$out/SKILL.md" \
-      --replace-fail "npm exec --yes --package=@artifactshare/cli -- artifactshare" "artifactshare"
-  '';
+  # skill は CLI と同じ derivation から取り、別に固定しない。CLI はコマンドのたびに
+  # user scope の skill を自身の同梱版へ更新しようとし、版がずれると symlink の先の
+  # store へ書き込みに行く（権限で失敗するだけだが、更新を促す案内が出続ける）。
+  artifactshareSkill = "${artifactshareCli}/lib/node_modules/@artifactshare/cli/skills/artifactshare";
 
   managedAgentSkills = {
     "artifactshare" = artifactshareSkill;
