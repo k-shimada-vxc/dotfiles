@@ -129,7 +129,15 @@ in
     pkgs.starship
     # 更新の速いコーディングエージェントは nixos-25.11 では upstream から大きく遅れるため、unstable から取る。
     pkgs-unstable.claude-code
-    pkgs-unstable.opencode
+    # TEMPORARY: nixpkgs-unstable 13e5376 の opencode 2.2.5 は node_modules の outputHash が
+    # darwin で取得した中身と一致せずビルドできない。claude-code を上げるために lock を進めたいので、
+    # 手元で取得した値で一時的に上書きする。取得物を検証なしに正とみなすことになるため、
+    # nixpkgs 側で直ったらこの上書きを消す。
+    (pkgs-unstable.opencode.overrideAttrs (old: {
+      node_modules = old.node_modules.overrideAttrs {
+        outputHash = "sha256-dIveiaiPFGSItwLyeMuPDxTE9gpvvnlTCB/+nG24qCc=";
+      };
+    }))
   ]
   # Homebrew から移した CLI。nixos-25.11 では移行前の brew 版より古くなるものがあるため、
   # 個別に系統を選び分けず unstable に揃える。
