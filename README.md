@@ -37,10 +37,10 @@ sam --version
 
 ## unstable 由来の CLI を更新する
 
-コーディングエージェントと Homebrew から移した CLI は `nixpkgs-unstable` から取っている。lock を進めて適用する。
+コーディングエージェントと Homebrew から移した CLI は `nixpkgs-unstable` から取っている。`.zshrc` の `darwin-update` で lock を進めてビルドし、パッケージ版の差分を確かめてから適用する。引数は `nix flake update` に渡り、省略するとすべての input を進める。
 
 ```sh
-nix flake update nixpkgs-unstable
+darwin-update nixpkgs-unstable
 sudo darwin-rebuild switch --flake ~/dotfiles#VX-NT-0969
 ```
 

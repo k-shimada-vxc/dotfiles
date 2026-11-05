@@ -77,6 +77,19 @@ alias gco="git checkout"
 # escape_json
 alias ej='escape_json'
 
+# nix
+# flake.lock を進めてビルドし、今のシステムとのパッケージ版の差分を出す。
+# switch は sudo が要り、差分を見てから適用を決めたいので含めない。
+# darwin-rebuild build は result をカレントに作るため、dotfiles に移って実行する。
+darwin-update() {
+  (
+    cd $SCRIPT_DIR &&
+      nix flake update "$@" &&
+      darwin-rebuild build --flake .#VX-NT-0969 &&
+      nix store diff-closures /run/current-system ./result
+  ) && echo "\n適用: sudo darwin-rebuild switch --flake $SCRIPT_DIR#VX-NT-0969"
+}
+
 
 # cdでディレクトリ移動したとき自動でlsする
 chpwd() {
