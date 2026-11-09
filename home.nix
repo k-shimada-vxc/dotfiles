@@ -162,6 +162,8 @@ in
     # brew の rust は toolchain を1版に固定するため、プロジェクトごとに toolchain を切り替えられる rustup にする。
     rustup
     shellcheck
+    # 公式の pkg は /usr/local へ入れて Nix の管理外になるため、nixpkgs 版で入れる。
+    ssm-session-manager-plugin
     tmux
     tree
     uv
